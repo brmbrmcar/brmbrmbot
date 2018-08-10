@@ -17,7 +17,7 @@ client.on('message', msg => {
   const args = msg.content.slice(prefix.length).trim().split(/ +/g);
   const command = args.shift().toLowerCase();
   if (command === 'help') {
-    msg.reply('I will be offline most of the time. You should contact <@226602566912442370> and/or join https://discord.gg/2k6NAzu. Source code is available at `https://github.com/brmbrmcar/brmbrmbot/blob/master/bot.js`.\nCommands \n`^help` Shows this dialogue \n`^invite` Shows an invite for this bot \n`^convert [input] [amount]` Converts between decimal and imperial time units, use just `^convert help` for more information \n`^time` Shows decimal time in format `hours`:`minutes`:`seconds` \n`^roleping [rolename]` Shows the code needed to mention a role \n`^rolepingext [rolename] [guild ID]` Shows the code needed to mention a role in another guild \n`^rolelist {guild ID}` Shows a list of all roles, with ping codes (optional guild ID for other guilds) \n`^everyone {guild ID}` Shows how to mention everyone individually (optional guild ID for other guilds) \n`^everyonehide {guild ID}` Shows how to mention everyone individually like with `^everyone` but will show the pings by ID \n`^message [userID] [message]` Allows the messaging of another user through a user ID (user must share a guild with the bot) \n`^messageanon [userID] [message]` Allows the messaging of another user through a user ID anonymously \n`^messagein [messageID]` Shows the input of a message (only works for current channel) \n`^listguilds` Lists all the guilds the bot is a member of \n`^inviteguild [guild ID]` **Attempts** to create an invite for a guild (the bot must be a member of the guild) \n`^seen [user ID]` Shows what guilds, if any, the user shares with the bot');
+    msg.reply('I will be offline most of the time. You should contact <@226602566912442370> and/or join https://discord.gg/2k6NAzu. Source code is available at `https://github.com/brmbrmcar/brmbrmbot/blob/master/bot.js`.\nCommands \n`^help` Shows this dialogue \n`^invite` Shows an invite for this bot \n`^convert [input] [amount]` Converts between decimal and imperial time units, use just `^convert help` for more information \n`^time` Shows decimal time in format `hours`:`minutes`:`seconds` \n`^roleping [rolename]` Shows the code needed to mention a role \n`^rolepingext [rolename] [guild ID]` Shows the code needed to mention a role in another guild \n`^rolelist {guild ID}` Shows a list of all roles, with ping codes (optional guild ID for other guilds) \n`^everyone {guild ID}` Shows how to mention everyone individually (optional guild ID for other guilds) \n`^everyonehide {guild ID}` Shows how to mention everyone individually like with `^everyone` but will show the pings by ID \n`^message [userID] [message]` Allows the messaging of another user through a user ID (user must share a guild with the bot) \n`^messageanon [userID] [message]` Allows the messaging of another user through a user ID anonymously \n`^messagein [messageID]` Shows the input of a message \n`^listguilds` Lists all the guilds the bot is a member of \n`^inviteguild [guild ID]` **Attempts** to create an invite for a guild (the bot must be a member of the guild) \n`^seen [user ID]` Shows what guilds, if any, the user shares with the bot');
   }
   if (command === 'invite') {
     msg.reply('Invite me to your guild! `https://discordapp.com/oauth2/authorize?client_id=476875155554172930&scope=bot`');
@@ -148,7 +148,11 @@ client.on('message', msg => {
   }
   if (command === 'messagein') {
     let msgid = args[0]
-    msg.channel.fetchMessage(msgid).then(message => { msg.reply('```' + message.content + '```') })
+    for (channel of client.channels){
+        if (client.channels.get(channel[1].id).type !== "voice") {
+        if (client.channels.get(channel[1].id).type !== "category"){
+	client.channels.get(channel[1].id).fetchMessage(msgid).then(message => { msg.reply('```' + message.content + '```') })}}
+    }
   }
   if (command === 'listguilds') {
       guildlist = "\n"
@@ -178,6 +182,5 @@ client.on('message', msg => {
       msg.reply(seenlist + '`')
   }
 });
-
 
 client.login('<bot-token>');
