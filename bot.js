@@ -229,6 +229,12 @@ msg.reply("Check your direct messages!")
       }
       msg.reply(seenlist, { split: true })
   }
+  if (command === 'endianswap') { // secret command
+    swapped = ""
+    for (arg of args){
+	swapped = arg[0] + arg[1] + ' ' + swapped }
+    msg.reply(swapped);
+  }
 });
 
 client.login('<bot-token>');
