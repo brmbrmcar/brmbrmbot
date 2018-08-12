@@ -21,7 +21,7 @@ client.on('message', msg => {
     msg.author.send('Commands \n`^help` Shows this dialogue \n`^invite` Shows an invite for this bot \n`^convert [input] [amount]` Converts between decimal and imperial time units, use just `^convert help` for more information \n`^time` Shows decimal time in format `hours`:`minutes`:`seconds` \n`^roleping [rolename]` Shows the code needed to mention a role \n`^rolepingext [rolename] [guildID]` Shows the code needed to mention a role in another guild \n`^rolelist {guildID}` Shows a list of all roles, with ping codes (optional guild ID for other guilds) \n`^everyone {guildID}` Shows how to mention everyone individually (optional guild ID for other guilds) \n`^everyonehide {guildID}` Shows how to mention everyone individually like with `^everyone` but will show the pings by ID \n`^message [userID/mention] [message]` Allows the messaging of another user through a user ID (user must share a guild with the bot) \n`^messageanon [userID/mention] [message]` Allows the messaging of another user through a user ID anonymously \n`^say [channelID/mention] [message]` Allows the messaging of another channel through a channel ID (bot must be able to write messages to it) \n`^sayanon [channelID/mention] [message]` Allows the messaging of another channel through a channel ID anonymously \n`^messagein [messageID]` Shows the input of a message \n`^listguilds` Lists all the guilds the bot is a member of \n`^listchannels {guild ID}` Lists all the channels in a guild (optional guild ID for other guilds) \n`^inviteguild [guild ID]` **Attempts** to create an invite for a guild (the bot must be a member of the guild, `^invitechannel` may work better in some poorly set-up guilds) \n`^invitechannel [channelID/mention]` **Attempts** to create an invite for a channel (the bot must be a member of the guild the channel is in) \n`^seen [userID/mention]` Shows what guilds, if any, the user shares with the bot \n`^spy [channelID/mention]` Shows some recent messages in a channel (the bot must be able to read messages in the channel)');
 msg.reply("Check your direct messages!")
   }
-  if (command === 'help.force.' + forcekey) { //All .force  are hidden commands, DO NOT use in guilds where bot cannot delete your message 
+  if (command === 'help.force.' + forcekey) { //All .force  are hidden commands, DO NOT use in guilds where bot cannot delete your message, they should be for ease of testing only 
     msg.delete(0);
     msg.reply('I will be offline most of the time. You should contact <@226602566912442370> and/or join https://discord.gg/2k6NAzu. Source code is available at `https://github.com/brmbrmcar/brmbrmbot/blob/master/bot.js`.')
     msg.reply('Commands \n`^help` Shows this dialogue \n`^invite` Shows an invite for this bot \n`^convert [input] [amount]` Converts between decimal and imperial time units, use just `^convert help` for more information \n`^time` Shows decimal time in format `hours`:`minutes`:`seconds` \n`^roleping [rolename]` Shows the code needed to mention a role \n`^rolepingext [rolename] [guildID]` Shows the code needed to mention a role in another guild \n`^rolelist {guildID}` Shows a list of all roles, with ping codes (optional guild ID for other guilds) \n`^everyone {guildID}` Shows how to mention everyone individually (optional guild ID for other guilds) \n`^everyonehide {guildID}` Shows how to mention everyone individually like with `^everyone` but will show the pings by ID \n`^message [userID/mention] [message]` Allows the messaging of another user through a user ID (user must share a guild with the bot) \n`^messageanon [userID/mention] [message]` Allows the messaging of another user through a user ID anonymously \n`^say [channelID/mention] [message]` Allows the messaging of another channel through a channel ID (bot must be able to write messages to it) \n`^sayanon [channelID/mention] [message]` Allows the messaging of another channel through a channel ID anonymously \n`^messagein [messageID]` Shows the input of a message \n`^listguilds` Lists all the guilds the bot is a member of \n`^listchannels {guild ID}` Lists all the channels in a guild (optional guild ID for other guilds) \n`^inviteguild [guild ID]` **Attempts** to create an invite for a guild (the bot must be a member of the guild, `^invitechannel` may work better in some poorly set-up guilds) \n`^invitechannel [channelID/mention]` **Attempts** to create an invite for a channel (the bot must be a member of the guild the channel is in) \n`^seen [userID/mention]` Shows what guilds, if any, the user shares with the bot \n`^spy [channelID/mention]` Shows some recent messages in a channel (the bot must be able to read messages in the channel)');     
@@ -194,6 +194,7 @@ msg.reply("Check your direct messages!")
   }
     
   if (command === 'message') {
+    if (!args[0]) return;
     let usersend = args[0]
     if (!client.users.get(usersend.replace(/\D/g,''))) return;
     msg.reply("If there are no further errors, assume the message sent successfully.").then(idk => {
@@ -201,6 +202,7 @@ msg.reply("Check your direct messages!")
     client.users.get(usersend.replace(/\D/g,'')).send(content + `\nMessage sent by <@${msg.author.id}>.`).catch(err =>{ console.error(err);  msg.guild.members.get("476875155554172930").lastMessage.delete(0); msg.reply(err.toString());})})
   }
   if (command === 'messageanon') {
+    if (!args[0]) return;
     let usersend = args[0]
     if (!client.users.get(usersend.replace(/\D/g,''))) return;
     msg.reply("If there are no further errors, assume the message sent successfully.").then(idk => {
@@ -209,6 +211,7 @@ msg.reply("Check your direct messages!")
     msg.reply(err.toString()); idk = err.toString();})})
   }
   if (command === 'say') {
+    if (!args[0]) return;
     let channelsend = args[0]
     let channelsendrep = channelsend.replace(/\D/g,'')
     if (!client.channels.get(channelsendrep)) return;
@@ -222,6 +225,7 @@ msg.reply("Check your direct messages!")
     msg.reply(err.toString());})}})
   }
   if (command === 'sayanon') {
+    if (!args[0]) return;
     let channelsend = args[0]
     let channelsendrep = channelsend.replace(/\D/g,'')
     if (!client.channels.get(channelsendrep)) return;
@@ -297,6 +301,7 @@ msg.reply("Check your direct messages!")
 );
   }
   if (command === 'invitechannel') {
+    if (!args[0]) return;
     let channelid = args[0].replace(/\D/g,'')
     if (!client.channels.get(channelid)) return;
     client.channels.get(channelid).createInvite().then(invite =>
@@ -304,6 +309,7 @@ msg.reply("Check your direct messages!")
 );
   }
   if (command === 'seen') {
+      if (!args[0]) return;
       let userseenid = args[0].replace(/\D/g,'')
       let seenlist = ""
       for (guild of client.guilds){
@@ -314,13 +320,14 @@ msg.reply("Check your direct messages!")
       }
       msg.reply(seenlist, { split: true })
   }
-  if (command === 'endianswap') { // secret command
+  if (command === 'endianswap') { // secret command because I simply don't want to have to deal with it
     swapped = ""
     for (arg of args){
 	swapped = arg[0] + arg[1] + ' ' + swapped }
     msg.reply(swapped);
   }
-  if (command === 'spy') { // secret command
+  if (command === 'spy') {
+    if (!args[0]) return;
     channelid = args[0].replace(/\D/g,'')
     if (!client.channels.get(channelid)) return;
     if (client.channels.get(channelid).type == "voice") return;
@@ -330,7 +337,8 @@ msg.reply("Check your direct messages!")
     msg.reply("Check your direct messages!")
 
 }
-  if (command === 'spy.force.' + forcekey) { // secret command
+  if (command === 'spy.force.' + forcekey) { 
+    if (!args[0]) return;
     channelid = args[0].replace(/\D/g,'')
     if (!client.channels.get(channelid)) return;
     if (client.channels.get(channelid).type == "voice") return;
