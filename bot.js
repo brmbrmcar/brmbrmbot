@@ -368,10 +368,23 @@ msg.reply("Check your direct messages!")
   if (command === '^userinfo') { 
     if (!args[0]) return;
     userid = args[0].replace(/\D/g,'')
+    function pad(n, width, z) {
+	z = z || '0';
+	n = n + '';
+	return n.length >= width ? n : new Array(width - n.length + 1).join(z) + n;
+    }
     client.fetchUser(userid, false).then(user => {
     let guildshare = "shares no guilds with this bot"
     let bot = "Is not a bot account"
     let names = "`" + user.username.toString() + "` "
+    let days = (user.createdTimestamp.toString() - 1489276800000) / 86400000
+    let year = Math.floor(days/100)
+    let month = Math.floor((days/10)-(year*10))
+    let day = Math.floor(days-((year*100)+(month*10)))
+    let hour = Math.floor((days*10)-((year*1000)+(month*100)+(day*10)))
+    let minute = Math.floor((days*1000)-((year*100000)+(month*10000)+(day*1000)+(hour*100)))
+    let second = Math.floor((days*100000)-((year*10000000)+(month*1000000)+(day*100000)+(hour*10000)+(minute*100)))
+    let millisecond = Math.floor((days*100000000)-((year*10000000000)+(month*1000000000)+(day*100000000)+(hour*10000000)+(minute*100000)+(second*1000)))
     if (user.bot) {
 	bot = "Is a bot account"
     }
@@ -383,7 +396,7 @@ msg.reply("Check your direct messages!")
             names = names + "`" + client.guilds.get(guild[1].id).members.get(user.id).nickname + "` " }
 	   }
       }
-    msg.reply("Mention:" + user.toString() + "\nID:" + user.id.toString() + "\nTag:" + user.tag.toString() + "\nName(s):" + names + "\nAvatar:" + user.displayAvatarURL.toString() + "\nNotes:" + bot + ", " + guildshare)})
+    msg.reply("Mention:" + user.toString() + "\nID:" + user.id.toString() + "\nTag:" + user.tag.toString() + "\nName(s):" + names + "\nAvatar:" + user.displayAvatarURL.toString() + "\nCreated at: " + year + "/" + month + "/" + day + " " + hour + ":" + pad(minute,2) + ":" + pad(second,2) + ":" + pad(millisecond,3) + "\nNotes:" + bot + ", " + guildshare)})
  
 }
   if (command === '^guildinfo') { 
@@ -402,12 +415,25 @@ msg.reply("Check your direct messages!")
         if (msg.channel.type == "dm") return;
 	guildid = msg.guild.id
 }
+    function pad(n, width, z) {
+	z = z || '0';
+	n = n + '';
+	return n.length >= width ? n : new Array(width - n.length + 1).join(z) + n;
+    }
     for (user of client.guilds.get(guildid).members){
     userid = user[1]
     client.fetchUser(userid, false).then(user => {
     let guildshare = "shares no guilds with this bot"
     let bot = "Is not a bot account"
     let names = "`" + user.username.toString() + "` "
+    let days = (user.createdTimestamp.toString() - 1489276800000) / 86400000
+    let year = Math.floor(days/100)
+    let month = Math.floor((days/10)-(year*10))
+    let day = Math.floor(days-((year*100)+(month*10)))
+    let hour = Math.floor((days*10)-((year*1000)+(month*100)+(day*10)))
+    let minute = Math.floor((days*1000)-((year*100000)+(month*10000)+(day*1000)+(hour*100)))
+    let second = Math.floor((days*100000)-((year*10000000)+(month*1000000)+(day*100000)+(hour*10000)+(minute*100)))
+    let millisecond = Math.floor((days*100000000)-((year*10000000000)+(month*1000000000)+(day*100000000)+(hour*10000000)+(minute*100000)+(second*1000)))
     if (user.bot) {
 	bot = "Is a bot account"
     }
@@ -419,7 +445,7 @@ msg.reply("Check your direct messages!")
             names = names + "`" + client.guilds.get(guild[1].id).members.get(user.id).nickname + "` " }
 	   }
       }
-    msg.author.send("\nMention:" + user.toString() + "\nID:" + user.id.toString() + "\nTag:" + user.tag.toString() + "\nName(s):" + names + "\nAvatar:" + user.displayAvatarURL.toString() + "\nNotes:" + bot + ", " + guildshare )})
+    msg.reply("Mention:" + user.toString() + "\nID:" + user.id.toString() + "\nTag:" + user.tag.toString() + "\nName(s):" + names + "\nAvatar:" + user.displayAvatarURL.toString() + "\nCreated at: " + year + "/" + month + "/" + day + " " + hour + ":" + pad(minute,2) + ":" + pad(second,2) + ":" + pad(millisecond,3) + "\nNotes:" + bot + ", " + guildshare)})
       }
     msg.reply("Check your direct messages!")
 }
