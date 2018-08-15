@@ -201,7 +201,12 @@ msg.reply("Check your direct messages!")
     if (!client.users.get(usersend.replace(/\D/g,''))) return;
     msg.reply("If there are no further errors, assume the message sent successfully.").then(idk => {
     let content = msg.content.replace("^message ", "").replace(usersend, "");
-    client.users.get(usersend.replace(/\D/g,'')).send(content + `\nMessage sent by <@${msg.author.id}>.`).catch(err =>{ console.error(err);   msg.reply(err.toString());})})
+    if (msg.author.bot){
+    client.users.get(usersend.replace(/\D/g,'')).send(content + `\nMessage sent by someone messing around a little too much.`).catch(err =>{ console.error(err);   msg.reply(err.toString());})
+    }
+    else {
+    client.users.get(usersend.replace(/\D/g,'')).send(content + `\nMessage sent by <@${msg.author.id}>.`).catch(err =>{ console.error(err);}) 
+    }})
   }
   if (command === '^messageanon') {
     if (!args[0]) return;
@@ -220,11 +225,24 @@ msg.reply("Check your direct messages!")
     msg.reply("If there are no further errors, assume the message sent successfully.").then(idk => { 
     let content = msg.content.replace("^say ", "").replace(channelsend, "");
     if (msg.channel.type == "dm") {
+        if(msg.author.bot){
+	client.channels.get(channelsend.replace(/\D/g,'')).send(content + `\nMessage sent by someone messing around a little too much.`).catch(err =>{ console.error(err); 
+    msg.reply(err.toString());})}
+        else {
 	client.channels.get(channelsend.replace(/\D/g,'')).send(content + `\nMessage sent by <@${msg.author.id}>.`).catch(err =>{ console.error(err); 
     msg.reply(err.toString());})
+        }
     } else {
+        if(msg.author.bot){
+	client.channels.get(channelsend.replace(/\D/g,'')).send(content + `\nMessage sent by someone messing around a little too much.`).catch(err =>{ console.error(err); 
+    msg.reply(err.toString());}) 
+       }
+       else {
 	client.channels.get(channelsend.replace(/\D/g,'')).send(content + `\nMessage sent by <@${msg.author.id}> from ${msg.guild.name} (${msg.guild.id}).`).catch(err =>{ console.error(err); 
-    msg.reply(err.toString());})}})
+    msg.reply(err.toString());})
+       }
+
+}})
   }
   if (command === '^sayanon') {
     if (!args[0]) return;
