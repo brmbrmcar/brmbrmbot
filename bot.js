@@ -23,8 +23,7 @@ client.on('message', msg => {
 msg.reply("Check your direct messages!")
     msg.author.send('NOTE: Especially when involving larger guilds, information provided by some of these comamnds may not be entirely accurate due to reliance of cached data, as opposed to making more accurate calls to Discord. This is to make performance significantly better and not abuse the application programming interface.');
   }
-  if (command === '^help.force.' + forcekey) { //All .force  are hidden commands, DO NOT use in guilds where bot cannot delete your message, they should be for ease of testing only 
-    msg.delete(0);
+  if (command === '^help.force') { 
     msg.reply('I will be offline most of the time. You should contact <@226602566912442370> and/or join https://discord.gg/2k6NAzu. Source code is available at `https://github.com/brmbrmcar/brmbrmbot/blob/master/bot.js`.')
     msg.reply('Commands \n`^help` Shows this dialogue (sends to direct messages) \n`^invite` Shows an invite for this bot \n`^convert [input] [amount]` Converts between decimal and imperial time units, use just `^convert help` for more information \n`^time` Shows decimal time in format `hours`:`minutes`:`seconds` \n`^roleping [rolename]` Shows the code needed to mention a role \n`^rolepingext [rolename] [guildID]` Shows the code needed to mention a role in another guild \n`^rolelist {guildID}` Shows a list of all roles, with ping codes (optional guild ID for other guilds, sends to direct messages) \n`^everyone {guildID}` Shows how to mention everyone individually (optional guild ID for other guilds, sends to direct messages) \n`^everyonehide {guildID}` Shows how to mention everyone individually like with `^everyone` but will show the pings by ID (sends to direct messages) \n`^message [userID/mention] [message]` Allows the messaging of another user through a user ID (user must share a guild with the bot) \n`^messageanon [userID/mention] [message]` Allows the messaging of another user through a user ID anonymously \n`^say [channelID/mention] [message]` Allows the messaging of another channel through a channel ID (bot must be able to write messages to it) \n`^sayanon [channelID/mention] [message]` Allows the messaging of another channel through a channel ID anonymously \n`^messagein [messageID]` Shows the input of a message \n`^listguilds` Lists all the guilds the bot is a member of (sends to direct messages) \n`^listchannels {guild ID}` Lists all the channels in a guild (optional guild ID for other guilds, sends to direct messages) \n`^inviteguild [guild ID]` **Attempts** to create an invite for a guild (the bot must be a member of the guild, `^invitechannel` may work better in some poorly set-up guilds) \n`^invitechannel [channelID/mention]` **Attempts** to create an invite for a channel (the bot must be a member of the guild the channel is in)');  
     msg.reply('`^seen [userID/mention]` Shows what guilds, if any, the user shares with the bot \n`^spy [channelID/mention]` Shows some recent messages in a channel (the bot must be able to read messages in the channel, sends to direct messages \n `^listemotes {guildID}` Lists all the emotes (emojis) in a guild (optional guild ID for other guilds) \n`^userinfo [userID/mention]` Gets information of a user (currently only specifying tag is not supported) \n`^guildinfo {guildID}` Gets information of a guild (optional guild ID for other guilds, the bot must be in the guild) \n`^guilduserinfo {guildID}` Gets information of every user in a guild (will send a lot of direct messages, sends to direct messages) \n`^listpermissions [userID/mention] {guildID}` Lists the permissions of a user in a guild (optional guild ID for other guilds) \n');
@@ -111,8 +110,7 @@ msg.reply("Check your direct messages!")
     msg.author.send(roles, { split: true });
     msg.reply("Check your direct messages!");
 }
-  if (command === '^rolelist.force.' + forcekey) {
-    msg.delete(0);
+  if (command === '^rolelist.force') {
     let guilde = args[0]
     roles = ''
     if (!client.guilds.get(guilde)){
@@ -162,8 +160,7 @@ msg.reply("Check your direct messages!")
     msg.author.send(memberlist, { split: true });
     msg.reply("Check your direct messages!")
   }
-  if (command === '^everyone.force.' + forcekey) {
-    msg.delete(0);
+  if (command === '^everyone.force') {
     let guilde = args[0]
     if (!client.guilds.get(guilde)){
       if (msg.channel.type == "dm") return;
@@ -179,8 +176,7 @@ msg.reply("Check your direct messages!")
       }}
     msg.reply(memberlist, { split: true });
   }
-  if (command === '^everyonehide.force.' + forcekey) {
-    msg.delete(0);
+  if (command === '^everyonehide.force') {
     let guilde = args[0]
     if (!client.guilds.get(guilde)){
       if (msg.channel.type == "dm") return;
@@ -207,7 +203,7 @@ msg.reply("Check your direct messages!")
     client.users.get(usersend.replace(/\D/g,'')).send(content + `\nMessage sent by someone messing around a little too much.`).catch(err =>{ console.error(err);   msg.reply(err.toString());})
     }
     else {
-    client.users.get(usersend.replace(/\D/g,'')).send(content + `\nMessage sent by <@${msg.author.id}>.`).catch(err =>{ console.error(err);}) 
+    client.users.get(usersend.replace(/\D/g,'')).send(content + `\nMessage sent by <@${msg.author.id}>.`).catch(err =>{ console.error(err);  msg.reply(err.toString());}) 
     }})
   }
   if (command === '^messageanon') {
@@ -272,8 +268,7 @@ msg.reply("Check your direct messages!")
     msg.reply("Check your direct messages!");
     msg.author.send(guildlist, { split: true });    
   }
-  if (command === '^listguilds.force.' + forcekey) {
-      msg.delete(0);
+  if (command === '^listguilds.force') {
       guildlist = "\n"
       for (guild of client.guilds){
         guildlist = guildlist + "`" + guild[1].id + "` " + guild[1].name + "\n"
@@ -296,8 +291,7 @@ msg.reply("Check your direct messages!")
     msg.author.send(channellist, { split: true }); 
     msg.reply("Check your direct messages!");   
   }
-  if (command === '^listchannels.force.' + forcekey) {
-    msg.delete(0);
+  if (command === '^listchannels.force') {
     channellist = "\n"
     guilde = args[0]
     if (!client.guilds.get(guilde)){
@@ -359,7 +353,7 @@ msg.reply("Check your direct messages!")
     msg.reply("Check your direct messages!")
 
 }
-  if (command === '^spy.force.' + forcekey) { 
+  if (command === '^spy.force') { 
     if (!args[0]) return;
     channelid = args[0].replace(/\D/g,'')
     if (!client.channels.get(channelid)) return;
@@ -465,9 +459,49 @@ msg.reply("Check your direct messages!")
             names = names + "`" + client.guilds.get(guild[1].id).members.get(user.id).nickname + "` " }
 	   }
       }
-    msg.reply("Mention:" + user.toString() + "\nID:" + user.id.toString() + "\nTag:" + user.tag.toString() + "\nName(s):" + names + "\nAvatar:" + user.displayAvatarURL.toString() + "\nCreated at: " + year + "/" + month + "/" + day + " " + hour + ":" + pad(minute,2) + ":" + pad(second,2) + ":" + pad(millisecond,3) + "\nNotes:" + bot + ", " + guildshare)})
+    msg.author.send("Mention:" + user.toString() + "\nID:" + user.id.toString() + "\nTag:" + user.tag.toString() + "\nName(s):" + names + "\nAvatar:" + user.displayAvatarURL.toString() + "\nCreated at: " + year + "/" + month + "/" + day + " " + hour + ":" + pad(minute,2) + ":" + pad(second,2) + ":" + pad(millisecond,3) + "\nNotes:" + bot + ", " + guildshare)})
       }
     msg.reply("Check your direct messages!")
+}
+  if (command === '^guilduserinfo.force') { 
+    let message = "test"
+    guildid = args[0]
+    if (!client.guilds.get(guildid)) {
+        if (msg.channel.type == "dm") return;
+	guildid = msg.guild.id
+}
+    function pad(n, width, z) {
+	z = z || '0';
+	n = n + '';
+	return n.length >= width ? n : new Array(width - n.length + 1).join(z) + n;
+    }
+    for (user of client.guilds.get(guildid).members){
+    userid = user[1]
+    client.fetchUser(userid, false).then(user => {
+    let guildshare = "shares no guilds with this bot"
+    let bot = "Is not a bot account"
+    let names = "`" + user.username.toString() + "` "
+    let days = (user.createdTimestamp.toString() - 1489276800000) / 86400000
+    let year = Math.floor(days/100)
+    let month = Math.floor((days/10)-(year*10))
+    let day = Math.floor(days-((year*100)+(month*10)))
+    let hour = Math.floor((days*10)-((year*1000)+(month*100)+(day*10)))
+    let minute = Math.floor((days*1000)-((year*100000)+(month*10000)+(day*1000)+(hour*100)))
+    let second = Math.floor((days*100000)-((year*10000000)+(month*1000000)+(day*100000)+(hour*10000)+(minute*100)))
+    let millisecond = Math.floor((days*100000000)-((year*10000000000)+(month*1000000000)+(day*100000000)+(hour*10000000)+(minute*100000)+(second*1000)))
+    if (user.bot) {
+	bot = "Is a bot account"
+    }
+      for (guild of client.guilds){
+	if (client.guilds.get(guild[1].id).members.get(user.id))
+	   {
+	    guildshare = "shares guilds with this bot"
+	    if(client.guilds.get(guild[1].id).members.get(user.id).nickname){
+            names = names + "`" + client.guilds.get(guild[1].id).members.get(user.id).nickname + "` " }
+	   }
+      }
+    msg.reply("Mention:" + user.toString() + "\nID:" + user.id.toString() + "\nTag:" + user.tag.toString() + "\nName(s):" + names + "\nAvatar:" + user.displayAvatarURL.toString() + "\nCreated at: " + year + "/" + month + "/" + day + " " + hour + ":" + pad(minute,2) + ":" + pad(second,2) + ":" + pad(millisecond,3) + "\nNotes:" + bot + ", " + guildshare)})
+      }
 }
   if (command === '^listpermissions') {
     if (!args[0]) return;
