@@ -1,4 +1,4 @@
-cconst Discord = require('discord.js');
+const Discord = require('discord.js');
 const client = new Discord.Client();
 var cli = new Discord.Client({autoReconnect:true});
 
