@@ -1,4 +1,4 @@
-const Discord = require('discord.js');
+cconst Discord = require('discord.js');
 const client = new Discord.Client();
 var cli = new Discord.Client({autoReconnect:true});
 
@@ -8,6 +8,7 @@ client.on('ready', () => {
 });
 client.on("guildMemberAdd", user => {
 })
+const commandused1 = new Set();
 
 
 
@@ -399,6 +400,18 @@ msg.reply("Check your direct messages!")
     let minute = Math.floor((days*1000)-((year*100000)+(month*10000)+(day*1000)+(hour*100)))
     let second = Math.floor((days*100000)-((year*10000000)+(month*1000000)+(day*100000)+(hour*10000)+(minute*100)))
     let millisecond = Math.floor((days*100000000)-((year*10000000000)+(month*1000000000)+(day*100000000)+(hour*10000000)+(minute*100000)+(second*1000)))
+    let joined = "is not in this guild"
+    if (msg.guild && msg.guild.members.get(user.id)){
+	let days2 = (msg.guild.members.get(user.id).joinedTimestamp.toString() - 1489276800000) / 86400000
+	let year2 = Math.floor(days2/100)
+	let month2 = Math.floor((days2/10)-(year2*10))
+	let day2 = Math.floor(days2-((year2*100)+(month2*10)))
+	let hour2 = Math.floor((days2*10)-((year2*1000)+(month2*100)+(day2*10)))
+	let minute2 = Math.floor((days2*1000)-((year2*100000)+(month2*10000)+(day2*1000)+(hour2*100)))
+	let second2 = Math.floor((days2*100000)-((year2*10000000)+(month2*1000000)+(day2*100000)+(hour2*10000)+(minute2*100)))
+	let millisecond2 = Math.floor((days2*100000000)-((year2*10000000000)+(month2*1000000000)+(day2*100000000)+(hour2*10000000)+(minute2*100000)+(second2*1000)))
+	joined = "joined the guild at " + year2 + "/" + month2 + "/" + day2 + " " + hour + ":" + pad(minute2,2) + ":" + pad(second2,2) + ":" + pad(millisecond2,3)
+    }
     if (user.bot) {
 	bot = "Is a bot account"
     }
@@ -410,7 +423,7 @@ msg.reply("Check your direct messages!")
             names = names + "`" + client.guilds.get(guild[1].id).members.get(user.id).nickname + "` " }
 	   }
       }
-    msg.reply("Mention:" + user.toString() + "\nID:" + user.id.toString() + "\nTag:" + user.tag.toString() + "\nName(s):" + names + "\nAvatar:" + user.displayAvatarURL.toString() + "\nCreated at: " + year + "/" + month + "/" + day + " " + hour + ":" + pad(minute,2) + ":" + pad(second,2) + ":" + pad(millisecond,3) + "\nNotes:" + bot + ", " + guildshare)})
+    msg.reply("Mention:" + user.toString() + "\nID:" + user.id.toString() + "\nTag:" + user.tag.toString() + "\nName(s):" + names + "\nAvatar:" + user.displayAvatarURL.toString() + "\nCreated at: " + year + "/" + month + "/" + day + " " + hour + ":" + pad(minute,2) + ":" + pad(second,2) + ":" + pad(millisecond,3) + "\nNotes:" + bot + ", " + guildshare +  ", " + joined)})
  
 }
   if (command === '^guildinfo') { 
@@ -422,7 +435,8 @@ msg.reply("Check your direct messages!")
     msg.reply("Name:" + client.guilds.get(guildid).name + "\nID:" + client.guilds.get(guildid).id + "\nNumber of members (run `^guilduserinfo` for more details):" + client.guilds.get(guildid).memberCount + "\nOwner:" + client.guilds.get(guildid).owner + "`" + client.guilds.get(guildid).ownerID + "`\nIcon:" + client.guilds.get(guildid).iconURL)
  
 }
-  if (command === '^guilduserinfo') { 
+  if (command === '^guilduserinfo') {
+    if (msg.author.bot) return; 
     let message = "test"
     guildid = args[0]
     if (!client.guilds.get(guildid)) {
@@ -448,6 +462,18 @@ msg.reply("Check your direct messages!")
     let minute = Math.floor((days*1000)-((year*100000)+(month*10000)+(day*1000)+(hour*100)))
     let second = Math.floor((days*100000)-((year*10000000)+(month*1000000)+(day*100000)+(hour*10000)+(minute*100)))
     let millisecond = Math.floor((days*100000000)-((year*10000000000)+(month*1000000000)+(day*100000000)+(hour*10000000)+(minute*100000)+(second*1000)))
+    let joined = "is not in this guild"
+    if (client.guilds.get(guildid).members.get(user.id)){
+	let days2 = (client.guilds.get(guildid).members.get(user.id).joinedTimestamp.toString() - 1489276800000) / 86400000
+	let year2 = Math.floor(days2/100)
+	let month2 = Math.floor((days2/10)-(year2*10))
+	let day2 = Math.floor(days2-((year2*100)+(month2*10)))
+	let hour2 = Math.floor((days2*10)-((year2*1000)+(month2*100)+(day2*10)))
+	let minute2 = Math.floor((days2*1000)-((year2*100000)+(month2*10000)+(day2*1000)+(hour2*100)))
+	let second2 = Math.floor((days2*100000)-((year2*10000000)+(month2*1000000)+(day2*100000)+(hour2*10000)+(minute2*100)))
+	let millisecond2 = Math.floor((days2*100000000)-((year2*10000000000)+(month2*1000000000)+(day2*100000000)+(hour2*10000000)+(minute2*100000)+(second2*1000)))
+	joined = "joined the guild at " + year2 + "/" + month2 + "/" + day2 + " " + hour + ":" + pad(minute2,2) + ":" + pad(second2,2) + ":" + pad(millisecond2,3)
+    }
     if (user.bot) {
 	bot = "Is a bot account"
     }
@@ -459,11 +485,16 @@ msg.reply("Check your direct messages!")
             names = names + "`" + client.guilds.get(guild[1].id).members.get(user.id).nickname + "` " }
 	   }
       }
-    msg.author.send("Mention:" + user.toString() + "\nID:" + user.id.toString() + "\nTag:" + user.tag.toString() + "\nName(s):" + names + "\nAvatar:" + user.displayAvatarURL.toString() + "\nCreated at: " + year + "/" + month + "/" + day + " " + hour + ":" + pad(minute,2) + ":" + pad(second,2) + ":" + pad(millisecond,3) + "\nNotes:" + bot + ", " + guildshare)})
+    msg.author.send("Mention:" + user.toString() + "\nID:" + user.id.toString() + "\nTag:" + user.tag.toString() + "\nName(s):" + names + "\nAvatar:" + user.displayAvatarURL.toString() + "\nCreated at: " + year + "/" + month + "/" + day + " " + hour + ":" + pad(minute,2) + ":" + pad(second,2) + ":" + pad(millisecond,3) + "\nNotes:" + bot + ", " + guildshare + ", " + joined)})
       }
     msg.reply("Check your direct messages!")
 }
   if (command === '^guilduserinfo.force') { 
+    if (msg.author.bot) return; 
+if (commandused1.has(msg.author.id)) {
+            msg.channel.send("⛔ Command on cooldown");
+    }
+    else {
     let message = "test"
     guildid = args[0]
     if (!client.guilds.get(guildid)) {
@@ -489,6 +520,18 @@ msg.reply("Check your direct messages!")
     let minute = Math.floor((days*1000)-((year*100000)+(month*10000)+(day*1000)+(hour*100)))
     let second = Math.floor((days*100000)-((year*10000000)+(month*1000000)+(day*100000)+(hour*10000)+(minute*100)))
     let millisecond = Math.floor((days*100000000)-((year*10000000000)+(month*1000000000)+(day*100000000)+(hour*10000000)+(minute*100000)+(second*1000)))
+    let joined = "is not in this guild"
+    if (client.guilds.get(guildid).members.get(user.id)){
+	let days2 = (client.guilds.get(guildid).members.get(user.id).joinedTimestamp.toString() - 1489276800000) / 86400000
+	let year2 = Math.floor(days2/100)
+	let month2 = Math.floor((days2/10)-(year2*10))
+	let day2 = Math.floor(days2-((year2*100)+(month2*10)))
+	let hour2 = Math.floor((days2*10)-((year2*1000)+(month2*100)+(day2*10)))
+	let minute2 = Math.floor((days2*1000)-((year2*100000)+(month2*10000)+(day2*1000)+(hour2*100)))
+	let second2 = Math.floor((days2*100000)-((year2*10000000)+(month2*1000000)+(day2*100000)+(hour2*10000)+(minute2*100)))
+	let millisecond2 = Math.floor((days2*100000000)-((year2*10000000000)+(month2*1000000000)+(day2*100000000)+(hour2*10000000)+(minute2*100000)+(second2*1000)))
+	joined = "joined the guild at " + year2 + "/" + month2 + "/" + day2 + " " + hour + ":" + pad(minute2,2) + ":" + pad(second2,2) + ":" + pad(millisecond2,3)
+    }
     if (user.bot) {
 	bot = "Is a bot account"
     }
@@ -500,9 +543,13 @@ msg.reply("Check your direct messages!")
             names = names + "`" + client.guilds.get(guild[1].id).members.get(user.id).nickname + "` " }
 	   }
       }
-    msg.reply("Mention:" + user.toString() + "\nID:" + user.id.toString() + "\nTag:" + user.tag.toString() + "\nName(s):" + names + "\nAvatar:" + user.displayAvatarURL.toString() + "\nCreated at: " + year + "/" + month + "/" + day + " " + hour + ":" + pad(minute,2) + ":" + pad(second,2) + ":" + pad(millisecond,3) + "\nNotes:" + bot + ", " + guildshare)})
+    msg.reply("Mention (disabled):" + '`' + user.toString() + '`' + "\nID:" + user.id.toString() + "\nTag:" + user.tag.toString() + "\nName(s):" + names + "\nAvatar:" + user.displayAvatarURL.toString() + "\nCreated at: " + year + "/" + month + "/" + day + " " + hour + ":" + pad(minute,2) + ":" + pad(second,2) + ":" + pad(millisecond,3) + "\nNotes:" + bot + ", " + guildshare + ", " + joined)})
       }
-}
+commandused1.add(msg.author.id);
+        setTimeout(() => {
+          commandused1.delete(msg.author.id);
+        }, 8640000);
+}}
   if (command === '^listpermissions') {
     if (!args[0]) return;
     let user = args[0].replace(/\D/g,'')
