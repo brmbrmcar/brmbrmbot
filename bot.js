@@ -18,18 +18,20 @@ client.on('message', msg => {
   const prefix = "^"
 
   const args = msg.content.trim().split(/ +/g);
-  const command = args.shift().toLowerCase();
+  const command = args.shift();
   if (command === '^help') {
-    msg.author.send('I will be offline most of the time. You should contact <@226602566912442370> and/or join https://discord.gg/2k6NAzu. Source code is available at `https://github.com/brmbrmcar/brmbrmbot/blob/master/bot.js`.')
+    msg.author.send('I will be offline most of the time. You should contact <@226602566912442370> and/or join https://discord.gg/2k6NAzu. Source code is available at `https://github.com/brmbrmcar/brmbrmbot/blob/master/bot.js`.');
     msg.author.send('Commands \n`^help` Shows this dialogue (sends to direct messages) \n`^invite` Shows an invite for this bot \n`^convert [input] [amount]` Converts between decimal and imperial time units, use just `^convert help` for more information \n`^time` Shows decimal time in format `hours`:`minutes`:`seconds` \n`^roleping [rolename]` Shows the code needed to mention a role \n`^rolepingext [rolename] [guildID]` Shows the code needed to mention a role in another guild \n`^rolelist {guildID}` Shows a list of all roles, with ping codes (optional guild ID for other guilds, sends to direct messages) \n`^everyone {guildID}` Shows how to mention everyone individually (optional guild ID for other guilds, sends to direct messages) \n`^everyonehide {guildID}` Shows how to mention everyone individually like with `^everyone` but will show the pings by ID (sends to direct messages) \n`^message [userID/mention/tag] [message]` Allows the messaging of another user through a user ID (user must share a guild with the bot) \n`^messageanon [userID/mention/tag] [message]` Allows the messaging of another user through a user ID anonymously \n`^say [channelID/mention] [message]` Allows the messaging of another channel through a channel ID (bot must be able to write messages to it) \n`^sayanon [channelID/mention] [message]` Allows the messaging of another channel through a channel ID anonymously \n`^messagein [messageID]` Shows the input of a message \n`^listguilds` Lists all the guilds the bot is a member of (sends to direct messages) \n`^listchannels {guild ID}` Lists all the channels in a guild (optional guild ID for other guilds, sends to direct messages) \n`^inviteguild [guild ID]` **Attempts** to create an invite for a guild (the bot must be a member of the guild, `^invitechannel` may work better in some poorly set-up guilds) \n`^invitechannel [channelID/mention]` **Attempts** to create an invite for a channel (the bot must be a member of the guild the channel is in)');
-    msg.author.send('`^seen [userID/mention]` Shows what guilds, if any, the user shares with the bot \n`^spy [channelID/mention]` Shows some recent messages in a channel (the bot must be able to read messages in the channel, sends to direct messages) \n`^listemotes {guildID}` Lists all the emotes (emojis) in a guild (optional guild ID for other guilds) \n`^userinfo [userID/mention/tag]` Gets information of a user (currently specifying tag is only supported for cached users) \n`^channelinfo {channelID}` Gets information of a channel (optional channel ID for other channels, the bot must be in the guild the channel is in) \n`^guildinfo {guildID}` Gets information of a guild (optional guild ID for other guilds, the bot must be in the guild) \n`^guilduserinfo {guildID}` Gets information of every user in a guild (will send a lot of direct messages, sends to direct messages) \n`^listpermissions [userID/mention] {guildID}` Lists the permissions of a user in a guild (optional guild ID for other guilds) \n`^messagereply [key] [message]` Replies to a message sent anonymously through the key provided with the message (suggested command) \n`^messagereplyanon [key] [message]` Replies to a message sent anonymously through the key provided with the message anonymoulsy (suggested command but replace `^messsagereply` with `^messagereplyanon`) \n`^reverse [framerate] {mute}` Reverses an attatched video or image at a given framerate (in frames per imperial second) (if there is no audio, mute MUST be said after the frame rate or the command will fail, command may fail easily) \n');
-msg.reply("Check your direct messages!")
-    msg.author.send('NOTE: Especially when involving larger guilds, information provided by some of these comamnds may not be entirely accurate due to reliance of cached data, as opposed to making more accurate calls to Discord. This is to make performance significantly better and not abuse the application programming interface.');
+    msg.author.send("`^seen [userID/mention]` Shows what guilds, if any, the user shares with the bot \n`^spy [channelID/mention]` Shows some recent messages in a channel (the bot must be able to read messages in the channel, sends to direct messages) \n`^listemotes {guildID}` Lists all the emotes (emojis) in a guild (optional guild ID for other guilds) \n`^userinfo [userID/mention/tag]` Gets information of a user (currently specifying tag is only supported for cached users) \n`^roleinfo [roleID/mention]` Gets information of a role \n`^channelinfo {channelID}` Gets information of a channel (optional channel ID for other channels, the bot must be in the guild the channel is in) \n`^guildinfo {guildID}` Gets information of a guild (optional guild ID for other guilds, the bot must be in the guild) \n`^guilduserinfo {guildID}` Gets information of every user in a guild (will send a lot of direct messages, sends to direct messages) \n`^listpermissions [userID/mention] {guildID}` Lists the permissions of a user in a guild (optional guild ID for other guilds) \n`^messagereply [key] [message]` Replies to a message sent anonymously through the key provided with the message (suggested command) \n`^messagereplyanon [key] [message]` Replies to a message sent anonymously through the key provided with the message anonymoulsy (suggested command but replace `^messsagereply` with `^messagereplyanon`) \n`^reverse [framerate] {mute}` Reverses an attatched video or image at a given framerate (in frames per imperial second) (if there is no audio, mute MUST be said after the frame rate or the command will fail, command may fail easily) \n`^finduser [searchterm]` Searches cached user IDs, tags and nicknames for a given search term (case insensitive, sends to direct messages) \n"); 
+    msg.author.send("`^findguild [searchterm]` Searches guild IDs and names for a given search term (case insensitive) \n`^findchannel [searchterm]` Searches channel IDs and names for a given search term (case insensitive) \n`^findrole [searchterm]` Searches role IDs and names for a given search term (case insensitive) \n`^type [ID]` Sees whether an ID is for a guild, a channel, a message, a role, an emote or a user (the bot must be able to fetch or see the ID for the command to work) \n");
+    msg.author.send("NOTE: Especially when involving larger guilds, information provided by some of these comamnds may not be entirely accurate due to reliance of cached data, as opposed to making more accurate calls to Discord. This is to make performance significantly better and not abuse the application programming interface.")
+    msg.reply("Check your direct messages!")
   }
   if (command === '^help.force') { 
     msg.reply('I will be offline most of the time. You should contact <@226602566912442370> and/or join https://discord.gg/2k6NAzu. Source code is available at `https://github.com/brmbrmcar/brmbrmbot/blob/master/bot.js`.')
     msg.reply('Commands \n`^help` Shows this dialogue (sends to direct messages) \n`^invite` Shows an invite for this bot \n`^convert [input] [amount]` Converts between decimal and imperial time units, use just `^convert help` for more information \n`^time` Shows decimal time in format `hours`:`minutes`:`seconds` \n`^roleping [rolename]` Shows the code needed to mention a role \n`^rolepingext [rolename] [guildID]` Shows the code needed to mention a role in another guild \n`^rolelist {guildID}` Shows a list of all roles, with ping codes (optional guild ID for other guilds, sends to direct messages) \n`^everyone {guildID}` Shows how to mention everyone individually (optional guild ID for other guilds, sends to direct messages) \n`^everyonehide {guildID}` Shows how to mention everyone individually like with `^everyone` but will show the pings by ID (sends to direct messages) \n`^message [userID/mention/tag] [message]` Allows the messaging of another user through a user ID (user must share a guild with the bot) \n`^messageanon [userID/mention/tag] [message]` Allows the messaging of another user through a user ID anonymously \n`^say [channelID/mention] [message]` Allows the messaging of another channel through a channel ID (bot must be able to write messages to it) \n`^sayanon [channelID/mention] [message]` Allows the messaging of another channel through a channel ID anonymously \n`^messagein [messageID]` Shows the input of a message \n`^listguilds` Lists all the guilds the bot is a member of (sends to direct messages) \n`^listchannels {guild ID}` Lists all the channels in a guild (optional guild ID for other guilds, sends to direct messages) \n`^inviteguild [guild ID]` **Attempts** to create an invite for a guild (the bot must be a member of the guild, `^invitechannel` may work better in some poorly set-up guilds) \n`^invitechannel [channelID/mention]` **Attempts** to create an invite for a channel (the bot must be a member of the guild the channel is in)'); 
-    msg.reply('`^seen [userID/mention]` Shows what guilds, if any, the user shares with the bot \n`^spy [channelID/mention]` Shows some recent messages in a channel (the bot must be able to read messages in the channel, sends to direct messages) \n`^listemotes {guildID}` Lists all the emotes (emojis) in a guild (optional guild ID for other guilds) \n`^userinfo [userID/mention/tag]` Gets information of a user (currently specifying tag is only supported for cached users) \n`^channelinfo {channelID}` Gets information of a channel (optional channel ID for other channels, the bot must be in the guild the channel is in) \n`^guildinfo {guildID}` Gets information of a guild (optional guild ID for other guilds, the bot must be in the guild) \n`^guilduserinfo {guildID}` Gets information of every user in a guild (will send a lot of direct messages, sends to direct messages) \n`^listpermissions [userID/mention] {guildID}` Lists the permissions of a user in a guild (optional guild ID for other guilds) \n`^messagereply [key] [message]` Replies to a message sent anonymously through the key provided with the message (suggested command) \n`^messagereplyanon [key] [message]` Replies to a message sent anonymously through the key provided with the message anonymoulsy (suggested command but replace `^messsagereply` with `^messagereplyanon`) \n`^reverse [framerate] {mute}` Reverses an attatched video or image at a given framerate (in frames per imperial second) (if there is no audio, mute MUST be said after the frame rate or the command will fail, command may fail easily) \n');
+    msg.reply("`^seen [userID/mention]` Shows what guilds, if any, the user shares with the bot \n`^spy [channelID/mention]` Shows some recent messages in a channel (the bot must be able to read messages in the channel, sends to direct messages) \n`^listemotes {guildID}` Lists all the emotes (emojis) in a guild (optional guild ID for other guilds) \n`^userinfo [userID/mention/tag]` Gets information of a user (currently specifying tag is only supported for cached users) \n`^roleinfo [roleID/mention]` Gets information of a role \n`^channelinfo {channelID}` Gets information of a channel (optional channel ID for other channels, the bot must be in the guild the channel is in) \n`^guildinfo {guildID}` Gets information of a guild (optional guild ID for other guilds, the bot must be in the guild) \n`^guilduserinfo {guildID}` Gets information of every user in a guild (will send a lot of direct messages, sends to direct messages) \n`^listpermissions [userID/mention] {guildID}` Lists the permissions of a user in a guild (optional guild ID for other guilds) \n`^messagereply [key] [message]` Replies to a message sent anonymously through the key provided with the message (suggested command) \n`^messagereplyanon [key] [message]` Replies to a message sent anonymously through the key provided with the message anonymoulsy (suggested command but replace `^messsagereply` with `^messagereplyanon`) \n`^reverse [framerate] {mute}` Reverses an attatched video or image at a given framerate (in frames per imperial second) (if there is no audio, mute MUST be said after the frame rate or the command will fail, command may fail easily) \n`^finduser [searchterm]` Searches cached user IDs, tags and nicknames for a given search term (case insensitive, sends to direct messages) \n")
+    msg.reply("`^findguild [searchterm]` Searches guild IDs and names for a given search term (case insensitive) \n`^findchannel [searchterm]` Searches channel IDs and names for a given search term (case insensitive) \n`^findrole [searchterm]` Searches role IDs and names for a given search term (case insensitive) \n`^type [ID]` Sees whether an ID is for a guild, a channel, a message, a role, an emote or a user (the bot must be able to fetch or see the ID for the command to work) \n");
     msg.reply('NOTE: Especially when involving larger guilds, information provided by some of these comamnds may not be entirely accurate due to reliance of cached data, as opposed to making more accurate calls to Discord. This is to make performance significantly better and not abuse the application programming interface.');
   }
   if (command === '^invite') {
@@ -38,6 +40,11 @@ msg.reply("Check your direct messages!")
   if (command === '^convert') {
     let type = args[0]
     let amount = args[1]
+    function pad(n, width, z) {
+	z = z || '0';
+	n = n + '';
+	return n.length >= width ? n : new Array(width - n.length + 1).join(z) + n;
+    }
     if (type === "decs"){
 	out = parseFloat(amount)*0.864
 	msg.reply(out);
@@ -59,11 +66,47 @@ msg.reply("Check your direct messages!")
 	msg.reply(out);
     }
     if (type === "imph"){
-	out = parseFloat(amount)*2.4
+	out = parseFloat(amount)/2.4
+	msg.reply(out);
+    }
+    if (type === "unix"){
+    let days = (amount - 1489276800000) / 86400000
+    let year = Math.floor(days/100)
+    let month = Math.floor((days/10)-(year*10))
+    let day = Math.floor(days-((year*100)+(month*10)))
+    let hour = Math.floor((days*10)-((year*1000)+(month*100)+(day*10)))
+    let minute = Math.floor((days*1000)-((year*100000)+(month*10000)+(day*1000)+(hour*100)))
+    let second = Math.floor((days*100000)-((year*10000000)+(month*1000000)+(day*100000)+(hour*10000)+(minute*100)))
+    let millisecond = Math.floor((days*100000000)-((year*10000000000)+(month*1000000000)+(day*100000000)+(hour*10000000)+(minute*100000)+(second*1000)))
+    out = year + "/" + month + "/" + day + " " + hour + ":" + pad(minute,2) + ":" + pad(second,2) + ":" + pad(millisecond,3)
+    msg.reply(out);
+    }
+    if (type === "unixs"){
+    let days = (amount - 1489276800) / 86400
+    let year = Math.floor(days/100)
+    let month = Math.floor((days/10)-(year*10))
+    let day = Math.floor(days-((year*100)+(month*10)))
+    let hour = Math.floor((days*10)-((year*1000)+(month*100)+(day*10)))
+    let minute = Math.floor((days*1000)-((year*100000)+(month*10000)+(day*1000)+(hour*100)))
+    let second = Math.floor((days*100000)-((year*10000000)+(month*1000000)+(day*100000)+(hour*10000)+(minute*100)))
+    let millisecond = Math.floor((days*100000000)-((year*10000000000)+(month*1000000000)+(day*100000000)+(hour*10000000)+(minute*100000)+(second*1000)))
+    out = year + "/" + month + "/" + day + " " + hour + ":" + pad(minute,2) + ":" + pad(second,2) + ":" + pad(millisecond,3)
+    msg.reply(out);
+    }
+    if (type === "decu"){
+        if (!args[1]) return;
+        if (msg.content.replace("^convert decu","")=="") return;
+	out = msg.content.replace("^convert decu","").replace(/\D/g,'') * 0.864 + 1489276800000
+	msg.reply(out);
+    }
+    if (type === "decsu"){
+        if (!args[1]) return;
+        if (msg.content.replace("^convert decsu","")=="") return;
+	out = msg.content.replace("^convert decsu","").replace(/\D/g,'') * 864 + 1489276800000
 	msg.reply(out);
     }
     if (type === "help"){
-	msg.reply("`^convert [input] [amount]` Converts between decimal and imperial time units.\nInputs \n`decs` Converts decimal seconds into imperial seconds \n`imps` Converts imperial seconds into decimal seconds \n`decm` Converts decimal minutes into imperial minutes \n`impm` Converts imperial minutes into decimal minutes \n`dech` Converts decimal hours into imperial seconds \n`imph` Converts imperial hours into decimal hours");
+	msg.reply("`^convert [input] [amount]` Converts between decimal and imperial time units.\nInputs \n`decs` Converts decimal seconds into imperial seconds \n`imps` Converts imperial seconds into decimal seconds \n`decm` Converts decimal minutes into imperial minutes \n`impm` Converts imperial minutes into decimal minutes \n`dech` Converts decimal hours into imperial seconds \n`imph` Converts imperial hours into decimal hours \n`unix` Converts unix time milliseconds into decimal time \n`unixs` Converts unix time seconds into decimal time \n`decu` Converts decimal time with milliseconds into unix time (please provide full padding; `^convert decu 0/0/0 0:01:01:001` not `^convert decu 0/0/0 0:1:1:1`) \n`decsu` Converts decimal time without milliseconds into unix time");
     }
   }
   if (command === '^time') {
@@ -438,6 +481,7 @@ msg.reply("Check your direct messages!")
     if (!args[0]) return;
     let channelid = args[0].replace(/\D/g,'')
     if (!client.channels.get(channelid)) return;
+    if (client.channels.get(channelid) == "dm") return;
     client.channels.get(channelid).createInvite().then(invite =>
     msg.channel.send(invite.url)
 );
@@ -576,7 +620,7 @@ msg.reply("Check your direct messages!")
         //if (msg.channel.type == "dm") return;
 	channelid = msg.channel.id
         let guild = "Not applicable"
-        if (msg.channel.type !== "dm"){
+        if (client.channels.get(channelid).type !== "dm"){
 	    guild = " `" + client.channels.get(channelid).guild.id + "` " + client.channels.get(channelid).guild.name
 	}
 	msg.reply("Name:" + client.channels.get(channelid).name + "\nID:" + client.channels.get(channelid).id + "\nMention:<#" + client.channels.get(channelid).id + ">\nGuild:" + guild + "\nDescription:" + client.channels.get(channelid).topic)
@@ -585,11 +629,21 @@ msg.reply("Check your direct messages!")
 	channelid = args[0].replace(/\D/g,'')
 	if (!client.channels.get(channelid)) return;
         let guild = "Not applicable"
-        if (msg.channel.type !== "dm"){
+        if (client.channels.get(channelid).type !== "dm"){
 	    guild = " `" + client.channels.get(channelid).guild.id + "` " + client.channels.get(channelid).guild.name
 	}
 	msg.reply("Name:" + client.channels.get(channelid).name + "\nID:" + client.channels.get(channelid).id + "\nMention:<#" + client.channels.get(channelid).id + ">\nGuild:" + guild + "\nDescription:" + client.channels.get(channelid).topic)
     }
+}
+  if (command === '^roleinfo') { 
+    if (!args[0]) return;
+    roleid = args[0].replace(/\D/g,'')
+    for (guild of client.guilds){
+        if(client.guilds.get(guild[1].id).roles.get(roleid)){
+	msg.reply("Mention:" + client.guilds.get(guild[1].id).roles.get(roleid).toString() + "\nName:" + client.guilds.get(guild[1].id).roles.get(roleid).name + "\nID:" + client.guilds.get(guild[1].id).roles.get(roleid).id + "\nPosition (higher is more powerful):" + client.guilds.get(guild[1].id).roles.get(roleid).calculatedPosition + "\nGuild:" + client.guilds.get(guild[1].id).name + "`" + client.guilds.get(guild[1].id).id + "`\nPermissions number (work it out yourself):" + client.guilds.get(guild[1].id).roles.get(roleid).permissions)}
+    }
+    
+ 
 }
   if (command === '^guilduserinfo') {
     if (msg.author.bot) return; 
@@ -789,6 +843,130 @@ commandused1.add(msg.author.id);
         }, 10000);})}}
     
 
+  }
+  if (command === '^finduser') { 
+    let searchterm = msg.content.replace('^finduser ','')
+    let list = ""
+    for (user of client.users){
+	user = user[1]
+        names = ""
+      for (guild of client.guilds){
+	if (client.guilds.get(guild[1].id).members.get(user.id))
+	   {
+	    if(client.guilds.get(guild[1].id).members.get(user.id).nickname){
+            names = names + " " + client.guilds.get(guild[1].id).members.get(user.id).nickname}
+	   }
+      }
+        if(user.tag.toLowerCase().includes(searchterm.toLowerCase()) || user.id.includes(searchterm) || names.toLowerCase().includes(searchterm.toLowerCase()))
+	{
+	    list = list + user.toString() + " `" + user.id + "` " + user.tag + "\n"
+        }
+    }
+    msg.reply("Check your direct messages!")
+    msg.author.send(list, { split: true }) 
+}
+  if (command === '^finduser.force') { 
+    let searchterm = msg.content.replace('^finduser.force ','')
+    let list = ""
+    for (user of client.users){
+	user = user[1]
+        names = ""
+      for (guild of client.guilds){
+	if (client.guilds.get(guild[1].id).members.get(user.id))
+	   {
+	    if(client.guilds.get(guild[1].id).members.get(user.id).nickname){
+            names = names + " " + client.guilds.get(guild[1].id).members.get(user.id).nickname}
+	   }
+      }
+        if(user.tag.toLowerCase().includes(searchterm.toLowerCase()) || user.id.includes(searchterm) || names.toLowerCase().includes(searchterm.toLowerCase()))
+	{
+	    list = list + user.toString() + " `" + user.id + "` " + user.tag + "\n"
+        }
+    }
+    msg.reply(list, { split: true }) 
+}
+  if (command === '^findguild') { 
+    let searchterm = msg.content.replace('^findguild ','')
+    let list = ""
+    for (guild of client.guilds){
+	guild = guild[1]
+        if(guild.name.toLowerCase().includes(searchterm.toLowerCase()) || guild.id.includes(searchterm))
+	{
+	    list = list + "`" + guild.id + "` " + guild.name + "\n"
+        }
+    }
+    msg.reply(list, { split: true }) 
+}
+  if (command === '^findchannel') { 
+    let searchterm = msg.content.replace('^findchannel ','')
+    let list = ""
+    for (channel of client.channels){
+	channel = channel[1]
+        if(channel.type !== "dm"){
+        if(channel.name.toLowerCase().includes(searchterm.toLowerCase()) || channel.id.includes(searchterm))
+	{
+	    list = list + "`" + channel.id + "` " + channel.toString() + " " + channel.name + "\n"
+        }}
+    }
+    msg.reply(list, { split: true }) 
+}
+  if (command === '^findrole') { 
+    let searchterm = msg.content.replace('^findrole ','')
+    let list = ""
+    for (guild of client.guilds){
+    for (role of guild[1].roles){
+	role = role[1]
+        if(role.name.toLowerCase().includes(searchterm.toLowerCase()) || role.id.includes(searchterm))
+	{
+	    list = list + "`" + role.id + "` " + role.toString() + " " + role.name + "\n"
+        }
+    }}
+    msg.reply(list, { split: true }) 
+}
+  if (command === '^type') {
+    if(!args[0]) return;
+    let id = args[0]
+    let found = false
+    if(client.guilds.get(id) && client.channels.get(id)){
+	msg.reply("It would appear to be a guild and a channel. Run `^guildinfo " + id + "` or `^channelinfo " + id + "` for more information.")
+    }
+    else if(client.guilds.get(id)){
+	msg.reply("It would appear to be a guild. Run `^guildinfo " + id + "` for more information.")
+    }
+    else if(client.channels.get(id)){
+	msg.reply("It would appear to be a channel. Run `^channelinfo " + id + "` for more information.")
+    }
+    else if(client.users.get(id)){
+	msg.reply("They would appear to be a user. Run `^userinfo " + id + "` for more information.")
+    }
+    else {
+	for (guild of client.guilds){
+	    if(guild[1].roles.get(id)){
+		msg.reply("It would appear to be a role. Run `^roleinfo " + id + "` for more information.")
+		found = true
+	    }
+	    if(guild[1].emojis.get(id)){
+		msg.reply("It would appear to be an emote from " + guild[1].id + ". " + guild[1].emojis.get(id).toString() + " Run `^guildinfo " + guild[1].id + "` for more information.")
+		found = true
+	    }
+	}
+	client.fetchUser(id, false).then(user => {
+	    if(user.id == id){
+		msg.reply("They would appear to be a user. Run `^userinfo " + id + "` for more information.")
+		found = true
+	    }
+	})
+	for (channel of client.channels){
+		if (client.channels.get(channel[1].id).type !== "voice") {
+		if (client.channels.get(channel[1].id).type !== "category"){
+			client.channels.get(channel[1].id).fetchMessage(id).then(message => {
+			     if(message.id == id){
+				msg.reply("It would appear to be a message from " + channel[1].toString() + ". Run `^messagein " + id + "` or `^channelinfo " + channel[1].id + "` for more information.")
+				found = true
+			     }
+			}) } }
+	}
+    }
   }
 })
 
