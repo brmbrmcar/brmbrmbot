@@ -93,20 +93,113 @@ client.on('message', msg => {
     out = year + "/" + month + "/" + day + " " + hour + ":" + pad(minute,2) + ":" + pad(second,2) + ":" + pad(millisecond,3)
     msg.reply(out);
     }
+    if (type === "utc"){
+    var intime = new Date(msg.content.replace("^convert impr ","") + " GMT")
+    let days = (intime.getTime() - 1489276800000) / 86400000
+    let year = Math.floor(days/100)
+    let month = Math.floor((days/10)-(year*10))
+    let day = Math.floor(days-((year*100)+(month*10)))
+    let hour = Math.floor((days*10)-((year*1000)+(month*100)+(day*10)))
+    let minute = Math.floor((days*1000)-((year*100000)+(month*10000)+(day*1000)+(hour*100)))
+    let second = Math.floor((days*100000)-((year*10000000)+(month*1000000)+(day*100000)+(hour*10000)+(minute*100)))
+    let millisecond = Math.floor((days*100000000)-((year*10000000000)+(month*1000000000)+(day*100000000)+(hour*10000000)+(minute*100000)+(second*1000)))
+    out = year + "/" + month + "/" + day + " " + hour + ":" + pad(minute,2) + ":" + pad(second,2) + ":" + pad(millisecond,3)
+    msg.reply(out);
+    }
     if (type === "decu"){
         if (!args[1]) return;
+        const parts = msg.content.trim().split("/");
+        let startpoint = 1489276800000
+        let negative = "false"
+        if (!parts[1]){
+            startpoint = Math.floor(Date.now() / 86400000) * 86400000;
+        }
+        else {
+	    if (parts[0].includes("-")){
+		negative = "true"
+	    }
+        }
         if (msg.content.replace("^convert decu","")=="") return;
-	out = msg.content.replace("^convert decu","").replace(/\D/g,'') * 0.864 + 1489276800000
+        if(negative=="true"){
+            
+	    out = msg.content.replace(parts[0]).replace(/\D/g,'') * 0.864 + startpoint - (parts[0].replace(/\D/g,'')*10000000000*0.864)
+        }
+	else{
+            out = msg.content.replace("^convert decu","").replace(/\D/g,'') * 0.864 + startpoint
+        }
 	msg.reply(out);
     }
     if (type === "decsu"){
         if (!args[1]) return;
+        const parts = msg.content.trim().split("/");
+        let startpoint = 1489276800000
+        let negative = "false"
+        if (!parts[1]){
+            startpoint = Math.floor(Date.now() / 86400000) * 86400000;
+        }
+        else {
+	    if (parts[0].includes("-")){
+		negative = "true"
+	    }
+        }
         if (msg.content.replace("^convert decsu","")=="") return;
-	out = msg.content.replace("^convert decsu","").replace(/\D/g,'') * 864 + 1489276800000
+        if(negative=="true"){
+            
+	    out = msg.content.replace(parts[0]).replace(/\D/g,'') * 864 + startpoint - (parts[0].replace(/\D/g,'')*10000000000*0.864)
+        }
+	else{
+            out = msg.content.replace("^convert decsu","").replace(/\D/g,'') * 864 + startpoint
+        }
 	msg.reply(out);
     }
+    if (type === "decutc"){
+        if (!args[1]) return;
+        const parts = msg.content.trim().split("/");
+        let startpoint = 1489276800000
+        let negative = "false"
+        if (!parts[1]){
+            startpoint = Math.floor(Date.now() / 86400000) * 86400000;
+        }
+        else {
+	    if (parts[0].includes("-")){
+		negative = "true"
+	    }
+        }
+        if (msg.content.replace("^convert decutc","")=="") return;
+        if(negative=="true"){
+            
+	    out = msg.content.replace(parts[0]).replace(/\D/g,'') * 0.864 + startpoint - (parts[0].replace(/\D/g,'')*10000000000*0.864)
+        }
+	else{
+            out = msg.content.replace("^convert decutc","").replace(/\D/g,'') * 0.864 + startpoint
+        }
+	msg.reply(new Date(out).toGMTString());
+    }
+    if (type === "decsutc"){
+        if (!args[1]) return;
+        const parts = msg.content.trim().split("/");
+        let startpoint = 1489276800000
+        let negative = "false"
+        if (!parts[1]){
+            startpoint = Math.floor(Date.now() / 86400000) * 86400000;
+        }
+        else {
+	    if (parts[0].includes("-")){
+		negative = "true"
+	    }
+        }
+        if (msg.content.replace("^convert decsu","")=="") return;
+        if(negative=="true"){
+            
+	    out = msg.content.replace(parts[0]).replace(/\D/g,'') * 864 + startpoint - (parts[0].replace(/\D/g,'')*10000000000*0.864)
+        }
+	else{
+            out = msg.content.replace("^convert decsutc","").replace(/\D/g,'') * 864 + startpoint
+        }
+	msg.reply(new Date(out).toGMTString());
+    }
     if (type === "help"){
-	msg.reply("`^convert [input] [amount]` Converts between decimal and imperial time units.\nInputs \n`decs` Converts decimal seconds into imperial seconds \n`imps` Converts imperial seconds into decimal seconds \n`decm` Converts decimal minutes into imperial minutes \n`impm` Converts imperial minutes into decimal minutes \n`dech` Converts decimal hours into imperial seconds \n`imph` Converts imperial hours into decimal hours \n`unix` Converts unix time milliseconds into decimal time \n`unixs` Converts unix time seconds into decimal time \n`decu` Converts decimal time with milliseconds into unix time (please provide full padding; `^convert decu 0/0/0 0:01:01:001` not `^convert decu 0/0/0 0:1:1:1`) \n`decsu` Converts decimal time without milliseconds into unix time");
+	msg.reply("`^convert [input] [amount]` Converts between decimal and imperial time units.\nInputs \n`decs` Converts decimal seconds into imperial seconds \n`imps` Converts imperial seconds into decimal seconds \n`decm` Converts decimal minutes into imperial minutes \n`impm` Converts imperial minutes into decimal minutes \n`dech` Converts decimal hours into imperial seconds \n`imph` Converts imperial hours into decimal hours \n`unix` Converts unix time milliseconds into decimal time \n`unixs` Converts unix time seconds into decimal time \n`utc` Converts Universal Coordinated Time into decimal time \n`decu` Converts decimal time with milliseconds into unix time (please provide full padding; `^convert decu 0/0/0 0:01:01:001` not `^convert decu 0/0/0 0:1:1:1`) \n`decsu` Converts decimal time without milliseconds into unix time \n`decutc` Converts decimal time with milliseconds into Universal Coordinated Time (may show as GMT in response) \n`decsutc` Converts decimal time without milliseconds into Universal Coordinated Time (may show as GMT in response)");
     }
   }
   if (command === '^time') {
@@ -115,13 +208,15 @@ client.on('message', msg => {
 	n = n + '';
 	return n.length >= width ? n : new Array(width - n.length + 1).join(z) + n;
     }
-    date = new Date();
-    secs = date.getUTCSeconds() + (60 * date.getUTCMinutes()) + (60 * 60 * date.getUTCHours());
-    dt = secs/0.864
-    hours = Math.floor(dt/10000)
-    minutes = Math.floor(dt/100) - (100*hours)
-    seconds = Math.floor(dt) - (10000*hours) - (100*minutes)
-    msg.reply(`${hours}:${pad(minutes,2)}:${pad(seconds,2)}`);
+    let days = (new Date().getTime() - 1489276800000) / 86400000
+    let year = Math.floor(days/100)
+    let month = Math.floor((days/10)-(year*10))
+    let day = Math.floor(days-((year*100)+(month*10)))
+    let hour = Math.floor((days*10)-((year*1000)+(month*100)+(day*10)))
+    let minute = Math.floor((days*1000)-((year*100000)+(month*10000)+(day*1000)+(hour*100)))
+    let second = Math.floor((days*100000)-((year*10000000)+(month*1000000)+(day*100000)+(hour*10000)+(minute*100)))
+    let millisecond = Math.floor((days*100000000)-((year*10000000000)+(month*1000000000)+(day*100000000)+(hour*10000000)+(minute*100000)+(second*1000)))
+    msg.reply(year + "/" + month + "/" + day + " " + hour + ":" + pad(minute,2) + ":" + pad(second,2) + ":" + pad(millisecond,3));
 }
   if (command === '^time.update') {
     function pad(n, width, z) {
@@ -129,21 +224,25 @@ client.on('message', msg => {
 	n = n + '';
 	return n.length >= width ? n : new Array(width - n.length + 1).join(z) + n;
     }
-    date = new Date();
-    secs = date.getUTCSeconds() + (60 * date.getUTCMinutes()) + (60 * 60 * date.getUTCHours());
-    dt = secs/0.864
-    hours = Math.floor(dt/10000)
-    minutes = Math.floor(dt/100) - (100*hours)
-    seconds = Math.floor(dt) - (10000*hours) - (100*minutes)
-    msg.channel.send(`${hours}:${pad(minutes,2)}:${pad(seconds,2)}`).then((message)=>{
+    let days = (new Date().getTime() - 1489276800000) / 86400000
+    let year = Math.floor(days/100)
+    let month = Math.floor((days/10)-(year*10))
+    let day = Math.floor(days-((year*100)+(month*10)))
+    let hour = Math.floor((days*10)-((year*1000)+(month*100)+(day*10)))
+    let minute = Math.floor((days*1000)-((year*100000)+(month*10000)+(day*1000)+(hour*100)))
+    let second = Math.floor((days*100000)-((year*10000000)+(month*1000000)+(day*100000)+(hour*10000)+(minute*100)))
+    let millisecond = Math.floor((days*100000000)-((year*10000000000)+(month*1000000000)+(day*100000000)+(hour*10000000)+(minute*100000)+(second*1000)))
+    msg.channel.send(year + "/" + month + "/" + day + " " + hour + ":" + pad(minute,2) + ":" + pad(second,2) + ":" + pad(millisecond,3)).then((message)=>{
     setInterval(() => {
-    date = new Date();
-    secs = date.getUTCSeconds() + (60 * date.getUTCMinutes()) + (60 * 60 * date.getUTCHours());
-    dt = secs/0.864
-    hours = Math.floor(dt/10000)
-    minutes = Math.floor(dt/100) - (100*hours)
-    seconds = Math.floor(dt) - (10000*hours) - (100*minutes)
-    message.edit(`${hours}:${pad(minutes,2)}:${pad(seconds,2)}`)
+    let days = (new Date().getTime() - 1489276800000) / 86400000
+    let year = Math.floor(days/100)
+    let month = Math.floor((days/10)-(year*10))
+    let day = Math.floor(days-((year*100)+(month*10)))
+    let hour = Math.floor((days*10)-((year*1000)+(month*100)+(day*10)))
+    let minute = Math.floor((days*1000)-((year*100000)+(month*10000)+(day*1000)+(hour*100)))
+    let second = Math.floor((days*100000)-((year*10000000)+(month*1000000)+(day*100000)+(hour*10000)+(minute*100)))
+    let millisecond = Math.floor((days*100000000)-((year*10000000000)+(month*1000000000)+(day*100000000)+(hour*10000000)+(minute*100000)+(second*1000)))
+    message.edit(year + "/" + month + "/" + day + " " + hour + ":" + pad(minute,2) + ":" + pad(second,2) + ":" + pad(millisecond,3))
     }, 5000)
 })
   }
@@ -473,7 +572,7 @@ client.on('message', msg => {
     if (!client.guilds.get(guildid).channels.find(c => c.position === 0)) return;
     let invchannel = client.guilds.get(guildid).channels.find(c => c.position === 0).id;
     //channelid = channel[1].id;
-    client.channels.get(invchannel).createInvite().then(invite =>
+    client.channels.get(invchannel).createInvite({maxAge:0}).then(invite =>
     msg.channel.send(invite.url)
 );
   }
@@ -482,7 +581,7 @@ client.on('message', msg => {
     let channelid = args[0].replace(/\D/g,'')
     if (!client.channels.get(channelid)) return;
     if (client.channels.get(channelid) == "dm") return;
-    client.channels.get(channelid).createInvite().then(invite =>
+    client.channels.get(channelid).createInvite({maxAge:0}).then(invite =>
     msg.channel.send(invite.url)
 );
   }
@@ -969,7 +1068,6 @@ commandused1.add(msg.author.id);
     }
   }
 })
-
 encryptkey = "<secret-encryptkey>"
 forcekey = "<secret-forcekey>"
 client.login('<bot-token>');
