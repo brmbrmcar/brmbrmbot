@@ -17,6 +17,24 @@ var messagebyuserdcount = new Set();
 var messagebywebhookdcount = new Set();
 var messagesfetchedstart = 0
 
+function userpromise(input, cache = true, forcefetch = false) {
+	if (!input) return Promise.reject(new Error('I need an input, my nice friend ❤🤗'))
+	var inputuserid = input.toString().replace(/\D/g,'')
+	var inputdiscrim = ""
+	var inputname = ""
+	var splitinput = input.toString().split(/#+/g)
+	if (splitinput[1]) {
+		inputdiscrim = /^\d+$/.test(splitinput[1]) ? splitinput[1] : splitinput[0]
+		inputname = inputdiscrim == splitinput[1] ? splitinput[0].replace("@","") : splitinput[1].replace("@","")
+		inputuserid = client.users.find(u => u.username == inputname && u.discriminator == inputdiscrim) ? client.users.find(u => u.username == inputname && u.discriminator == inputdiscrim).id : inputuserid
+	}
+	if (forcefetch == false && client.users.get(inputuserid)) return Promise.resolve(client.users.get(inputuserid));
+	return client.rest.methods.getUser(inputuserid, false).then(data => {
+		if (cache == true) client.actions.UserGet.handle(data);
+		return data;
+	})
+}
+
 client.on('error', console.error);
 client.on('ready', () => {
   console.log(`Logged in as ${client.user.tag}!`);
@@ -27,7 +45,7 @@ client.on('ready', () => {
 	if (!mutualcountgameset.has(member.id)) mutualcountgameset.add(member.id)
       }
   }
-  client.user.setGame('^help | ' + client.guilds.size + ' guilds, ' + client.users.size + ' cached users, ' + mutualcountgameset.size + ' users with shared guilds, ' + messagescountgame + ' messages | brmbrmcar.github.io/brmbrmbot.html');
+  client.user.setGame('^help | ' + client.guilds.size + ' guilds, ' + client.users.size + ' cached users, ' + mutualcountgameset.size + ' users with shared guilds, ' + messagescountgame + ' messages | brmbrmcar.github.io/brmbrmbot');
   }, 3000);
   setInterval (function (){
      var mutualcountgameset = new Set();
@@ -36,7 +54,7 @@ client.on('ready', () => {
 	    if (!mutualcountgameset.has(member.id)) mutualcountgameset.add(member.id)
          }
      }
-     client.user.setGame('^help | ' + client.guilds.size + ' guilds, ' + client.users.size + ' cached users, ' + mutualcountgameset.size + ' users with shared guilds, ' + messagescountgame + ' messages | brmbrmcar.github.io/brmbrmbot.html');     
+     client.user.setGame('^help | ' + client.guilds.size + ' guilds, ' + client.users.size + ' cached users, ' + mutualcountgameset.size + ' users with shared guilds, ' + messagescountgame + ' messages | brmbrmcar.github.io/brmbrmbot');     
   }, 60000);
   fetchallmessages()
   fetchallmembers()
@@ -903,17 +921,12 @@ client.on('message', msg => {
     msg.reply(emotelist, { split: true });
   }
   if (command === '^userinfo') { 
-    if (!args[0]) return;
-    userid = args[0].replace(/\D/g,'')
     function pad(n, width, z) {
 	z = z || '0';
 	n = n + '';
 	return n.length >= width ? n : new Array(width - n.length + 1).join(z) + n;
     }
-    if(client.users.find(user => user.tag === msg.content.replace('^userinfo ','').replace('@',''))){
-	 userid = client.users.find(user => user.tag === msg.content.replace('^userinfo ','').replace('@',''))
-    }
-    client.rest.methods.getUser(userid, false).then(user => {
+    userpromise(msg.content.replace('^userinfo ',''), false, true).then(user => {
     let guildshare = "shares no guilds with this bot"
     let bot = "Is not a bot account"
     let names = "`" + user.username.toString() + "` "
@@ -1082,7 +1095,7 @@ client.on('message', msg => {
     }
     for (user of client.guilds.get(guildid).members){
     userid = user[1]
-    client.fetchUser(userid, false).then(user => {
+    userpromise(userid, false, false).then(user => {
     let guildshare = "shares no guilds with this bot"
     let bot = "Is not a bot account"
     let names = "`" + user.username.toString() + "` "
@@ -1157,7 +1170,7 @@ if (commandused1.has(msg.author.id)) {
     }
     for (user of client.guilds.get(guildid).members){
     userid = user[1]
-    client.fetchUser(userid, false).then(user => {
+    userpromise(userid, false).then(user => {
     let guildshare = "shares no guilds with this bot"
     let bot = "Is not a bot account"
     let names = "`" + user.username.toString() + "` "
@@ -1457,7 +1470,6 @@ commandused1.add(msg.author.id);
   }
   if (client.roles.get(command.replace(/\D/g,''))) {
     if (client.roles.get(command.replace(/\D/g,'')).name.toLowerCase() == "someone"){
-	if (msg.author.bot) return;
 	if (!msg.guild) return;
         victim1 = msg.guild.members.random()
 	victim = client.users.get(victim1.id)
@@ -1465,7 +1477,7 @@ commandused1.add(msg.author.id);
 	msg.channel.send("@someone idk (" + victimname + ") \\" + victim.toString()).then(message=>{message.edit("@someone idk (" + victimname + ")")})
   }}
   if (command === '@someone') {
-	if (msg.author.bot) return;
+	if (msg.author.id == client.user.id) return;
 	if (!msg.guild) return;
         victim1 = msg.guild.members.random()
 	victim = client.users.get(victim1.id)
@@ -1627,13 +1639,10 @@ commandused1.add(msg.author.id);
   }
   if (command === '^embarrass') {
     let embarrass = msg.author.id
-    if (args[0]) embarrass = args[0].replace(/\D/g,'');
+    if (args[0]) embarrass = args[0]
     if (!msg.guild) return;
-    if(client.users.find(user => user.tag === msg.content.replace('^embarrass ','').replace('@',''))){
-	 embarrass = client.users.find(user => user.tag === msg.content.replace('^embarrass ','').replace('@','')).id
-    }
     let thingstosay = ["I hate vasker", "I hate brmbrmcar\'s videos", "I pretend to think the Buddhism Hotline is unironic", "I couldn\'t even make brmbrmbot so I doxx young Minecraft streamers for fun and say I\'m a hacker", "I denied Napstablook\'s friend request", "I just donated $10000 to Prager University", "SuperTux is a bad game", "I find brmbrmbot funny", "I take pride in my nationality, because I have no, I think they called, achievements", "I support free speech, so I support the mass state violence against people from the wrong religion", "I\'d rather have a totalitarian government carrying out genocides than let people have reasonable control of their lives", "The rights of an arbitrary system should be placed before those of actual people", "The Soviet Union was socialist"]
-    client.fetchUser(embarrass, false).then(embarrassed => {
+    userpromise(embarrass, false, false).then(embarrassed => {
     let content = thingstosay[Math.floor(Math.random() * thingstosay.length)]
     sendername = embarrassed.username;
     if (msg.guild.members.get(embarrassed.id)) sendername = msg.guild.members.get(embarrassed.id).nickname ? msg.guild.members.get(embarrassed.id).nickname : sendername;
@@ -1701,6 +1710,10 @@ commandused1.add(msg.author.id);
     }
     var deletedmessagecount = (messagebybotcount.size + messagebyusercount.size + messagebywebhookcount.size + messagesfetchedstart) - messagescountgame
     msg.reply("I have been online since " + year + "/" + month + "/" + day + " " + hour + ":" + pad(minute,2) + ":" + pad(second,2) + ":" + pad(millisecond,3) + " in decimal and " + since + " in unix time. This is " + decms + " milliseconds in decimal and " + client.uptime + " imperial milliseconds from the time I read your command. In this time, I have seen " + botcount + " bots and " + usercount + " non-bots, and read " + messagebybotcount.size + " messages from " + messagebybotdcount.size + " bots, " + messagebyusercount.size + " messages from " + messagebyuserdcount.size + " non-bots and " + messagebywebhookcount.size + " messages from " + messagebywebhookdcount.size + " webhooks. I have seen " + deletedmessagecount + " messages in total be deleted. Right now, I am in " + client.guilds.size + " guilds which means I can tell you basic information from " + client.channels.size + " channels. I share these guilds with " + mutualcountbotset.size + " bots and " + mutualcountuserset.size + " non-bots.")
+  }
+  if (msg.content && msg.content.toLowerCase().includes("subscribe") && (msg.content.toLowerCase().includes("pewdiepie") || msg.content.includes("UC-lHJZR3Gqxm24_Vd_AJ5Yw"))) {
+    if (msg.author.id == client.user.id) return;
+    msg.reply("WE MUST SMASH THE ALT-RIGHT <:antinazi:520395694780186624>😡")
   }
 })
 encryptkey = "<secret-encryptkey>"
