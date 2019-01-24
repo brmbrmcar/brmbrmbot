@@ -4,11 +4,15 @@ let exec = require('child_process').exec;
 var cli = new Discord.Client({autoReconnect:true});
 var CryptoJS = require("crypto-js");
 var Decimal = require('decimal.js');
+var Fraction = require('fraction.js');
+var BigNumber = require('bignumber.js');
 const Constants = require('discord.js/src/util/Constants.js');
 const Snowflake = require('discord.js/src/util/Snowflake');
 const Permissions = require('discord.js/src/util/Permissions');
 const Endpoints = Constants.Endpoints;
 const fs = require('fs');
+const math = require('mathjs')
+eval(fs.readFileSync('./BigInteger.min.js').toString());
 var messagescountgame = 0
 var messagebybotcount = new Set();
 var messagebyusercount = new Set();
@@ -93,6 +97,48 @@ client.on("guildMemberAdd", user => {
 	if (channellog.split(/ +/g)[0] == user.guild.id) {
 	   content = channellog.replace(channellog.split(/ +/g)[0] + " " + channellog.split(/ +/g)[1] + " ", "").replace(new RegExp("\\\\/n", "g"), "\n").replace(new RegExp("{user.mention}", "g"), "<@" + user.id + ">").replace(new RegExp("{user.id}", "g"), user.id).replace(new RegExp("{user.tag}", "g"), user.user.tag).replace(new RegExp("{user.name}", "g"), user.user.username).replace(new RegExp("{user.discrim}", "g"), user.user.discriminator).replace(new RegExp("{user}", "g"), usertouse).replace(new RegExp("{guild}", "g"), guildtouse).replace(new RegExp("{guild.name}", "g"), user.guild.name).replace(new RegExp("{guild.id}", "g"), user.guild.id)
 	   client.channels.get(channellog.split(/ +/g)[1]).send(content)
+	}
+     }
+     if (user.user.bot) {
+	for (guildrole of fs.readFileSync('botautorole.txt', 'utf-8').split(/\n+/g)) {
+	   if (!guildrole.split(/ +/g)[1]) continue;
+	   if (guildrole.split(/ +/g)[0] != user.guild.id) continue;
+	   if (!user.guild.roles.get(guildrole.split(/ +/g)[1])) continue;
+	   ended = false
+	   rolestoadd = []
+	   reason = ""
+	   for (role of guildrole.split(/ +/g)) {
+	     if (role == user.guild.id && ended == false) continue;
+	     if (user.guild.roles.get(role) && ended == false) {
+		rolestoadd.push(role)
+	     }
+	     else {
+		ended = true
+		reason = reason + role + " "
+	     }
+	   }
+	   user.addRoles(rolestoadd, reason)
+	}
+     }
+     else {
+	for (guildrole of fs.readFileSync('autorole.txt', 'utf-8').split(/\n+/g)) {
+	   if (!guildrole.split(/ +/g)[1]) continue;
+	   if (guildrole.split(/ +/g)[0] != user.guild.id) continue;
+	   if (!user.guild.roles.get(guildrole.split(/ +/g)[1])) continue;
+	   ended = false
+	   rolestoadd = []
+	   reason = ""
+	   for (role of guildrole.split(/ +/g)) {
+	     if (role == user.guild.id && ended == false) continue;
+	     if (user.guild.roles.get(role) && ended == false) {
+		rolestoadd.push(role)
+	     }
+	     else {
+		ended = true
+		reason = reason + role + " "
+	     }
+	   }
+	   user.addRoles(rolestoadd, reason)
 	}
      }
   } catch (err) { console.log(err) }
@@ -287,12 +333,12 @@ try {
   }
   if (command === '^help') {
     msg.author.send('I need proper hosting, so do not expect perfect uptime. You should contact <@460075269563351040> and/or join https://discord.gg/4ag7tTs. Source code is available at `https://github.com/brmbrmcar/brmbrmbot/blob/master/bot.js`. Deprecated commands are displayed with [D] (a better alternative command use is available and/or this command may be removed in the future). More help is available from https://brmbrmcar.github.io/brmbrmbot.html.');
-    msg.author.send("Commands \n`^help` Shows this dialogue (sends to direct messages) \n`^invite` Shows an invite for this bot \n`^convert [input] [amount]` Converts between decimal and imperial time units, use just `^convert help` for more information \n`^time` Shows decimal time in format `hours`:`minutes`:`seconds` \n`^roleping [rolename]` [D] Shows the code needed to mention a role \n`^rolepingext [rolename] [guildID]` [D] Shows the code needed to mention a role in another guild \n`^rolelist {guildID}` Shows a list of all roles, with ping codes (optional guild ID for other guilds, sends to direct messages) \n`^everyone {guildID}` Shows how to mention everyone individually (optional guild ID for other guilds, sends to direct messages) \n`^everyonehide {guildID}` [D] Shows how to mention everyone individually like with `^everyone` but will show the pings by ID (sends to direct messages) \n`^message [userID/mention/tag] [message]` Allows the messaging of another user through a user ID (user must share a guild with the bot) (`\\{` and `\\}` get replaced by `<` and `>`) \n`^messageanon [userID/mention/tag] [message]` Allows the messaging of another user through a user ID anonymously \n`^say [channelID/mention] [message]` Allows the messaging of another channel through a channel ID (bot must be able to write messages to it) \n`^sayanon [channelID/mention] [message]` Allows the messaging of another channel through a channel ID anonymously \n`^saywebhook [channelID/mention] [message]` Allows the messaging of another channel through a channel ID using a webhook (the bot must be able to create webhooks in the output channel) \n`^messagein [messageID] {channelID/mention}` Shows the input of a message (optional channel ID for other channels) \n`^listguilds` [D] Lists all the guilds the bot is a member of (sends to direct messages) \n`^listchannels {guild ID}` Lists all the channels in a guild (optional guild ID for other guilds, sends to direct messages) \n`^inviteguild [guild ID]` **Attempts** to create an invite for a guild (the bot must be a member of the guild) \n`^invitechannel [channelID/mention]` **Attempts** to create an invite for a channel (the bot must be a member of the guild the channel is in) \n`^seen [userID/mention]` Shows what guilds, if any, the user shares with the bot \n`^spy [channelID/mention]` Shows some recent messages in a channel (the bot must be able to read messages in the channel, sends to direct messages) \n`^listemotes {guildID}` Lists all the emotes (emojis) in a guild (optional guild ID for other guilds) \n`^userinfo [userID/mention/tag]` Gets information of a user (currently specifying tag is only supported for cached users) \n`^roleinfo [roleID/mention]` Gets information of a role \n`^channelinfo {channelID/mention}` Gets information of a channel (optional channel ID for other channels, the bot must be in the guild the channel is in) \n`^guildinfo {guildID}` Gets information of a guild (optional guild ID for other guilds, the bot must be in the guild) \n`^guilduserinfo {guildID}` [D] Gets information of every user in a guild (will send a lot of direct messages, sends to direct messages, limited to 1000 members) \n`^listpermissions [userID/mention] {guildID}` Lists the permissions of a user in a guild (optional guild ID for other guilds) \n`^messagereply [key] [message]` Replies to a message sent anonymously through the key provided with the message (suggested command) \n`^messagereplyanon [key] [message]` Replies to a message sent anonymously through the key provided with the message anonymoulsy (suggested command but replace `^messsagereply` with `^messagereplyanon`) \n`^reverse [framerate] {mute}` Reverses an attatched video or image at a given framerate (in frames per imperial second) (if there is no audio, mute MUST be said after the frame rate or the command will fail, command may fail easily) \n`^finduser [searchterm]` Searches cached user IDs, tags and nicknames for a given search term (case insensitive, sends to direct messages) \n`^findguild [searchterm]` Searches guild IDs and names for a given search term (case insensitive) \n`^findchannel [searchterm]` Searches channel IDs and names for a given search term (case insensitive) \n`^findrole [searchterm]` Searches role IDs and names for a given search term (case insensitive) \n`^findemote [searchterm]` Searches emote IDs and names for a given search term (case insensitive) \n`^type [ID]` Sees whether an ID is for a guild, a channel, a role, an emote or a user (the bot must be able to fetch or see the ID for the command to work) \n`^listbans {guildID}` Lists all the banned users and reasons for the bans in a guild (the bot must be able to ban members in the guild, optional guild ID for other guilds) \n`^copybans [inguildID] {outguildID}` Copies banned users and reasons from one guild to another (the bot must be able to ban members in both guilds, user must have ban, admin or owner permissions in output guild, optional guild ID for other output guilds) \n`^crownstop {guildID}` Shows all roles that are preventing the owner's crown icon from showing (optional guild ID for other guilds) \n`^ping` Pings the bot \n`@someone` Mentions a guild member at random, similar to the command that existed on Discord at some point in time long ago \n`^ban {guildID} [userID/mention/tag] {reason}` Bans a user from a guild with an optional reason (the bot must be able to ban members in the guild, user must have ban, admin or owner permissions in the guild, currently specifying tag is only supported for cached users, optional guild ID for other guilds) \n`^baseconvert [number] [inputbase] [outputbase]` Converts the base of a number to another specified base 10 base between 2 and 36 \n`^rateguild {guildID}` Uses an open source algorithm to work out how well set up a guild is and give it a rating (optional guild ID for other guilds) \n`^embarrass {userID/mention/tag}` Replies with a webhook with an embarrassing statement looking similar to the user (optional user for other users, the bot must be able to create webhooks in the channel) \n`^cacheusers [userIDs/mentions]` Adds or updates users seperated by a space into the bots' cache until next reboot \n`^uptime` Shows information on long the bot has been online for \n`^rawuser [userID/mention/tag]` Shows the raw information of a user \n`^rawmember [guildID] [userID/mention/tag]` Shows the raw information of a guild member \n`^rawguild {guildID}` Shows the raw information of a guild (optional guild ID for other guilds, sends to direct messages) \n`^rawinvite [invitecode]` Shows the raw information of an invite \n`^rawchannel {channelID/mention}` Shows the raw information of a channel (optional channel ID/mention for other channels) \n`^rawmessage [messageID] {channelID/mention}` Shows the raw information of a message (optional channel ID/mention for other channels) \n`^rawemote [emoteID] {guildID}` Shows the raw information of an emote (optional guild ID for other guilds) \n`^rawwebhook [webhookID]` Shows the raw information of an undeleted webhook \n`^report [messageID]` Reports basic information to the bot's owner about a message sent through the bot \n`^toggleforce {channelID/mention}` Toggles the ability to use `.force` commands in a given channel (disabled by default, user must have manage roles permissions in the guild and manage channels permissions for the channel, optional channel for other channels) \n`^togglespy {channelID/mention}` Toggles the ability to spy on a given channel (allowed by default) \n`^togglenonprefix {channelID/mention}` Toggles the ability to use commands and reponses without the standard `^` prefix as a trigger in a given channel (can be used by default) \n`^togglebotuse {channelID/mention}` Toggles the ability for bot accounts to use commands in a given channel except in security cases (enabled by default) \n`^togglesayblock {channelID/mention}` Toggles the blocking of messages sent through the bot for a specific channel (not blocked by default) \n`^guildrankings` Ranks guilds based on their recordered results pre-tested with `^guildinfo` \n`^joinlogs [channelID/mention] [guildID] {message}` Sets a logging message for when a user joins a given guild in a given channel (run without a message to turn off, `{user}` `{user.mention}` `{user.id}` `{user.tag}` `{user.name}` `{user.discrim}` will be replaced by the user, `{guild}` `{guild.name}` `{guild.id}` will be replaced by the guild, requires manage channel permissions, administrator or owner in the channel) \n`^leavelogs [channelID/mention] [guildID] {message}` Sets a logging message for when a user leaves a given guild in a given channel \n`^banlogs [channelID/mention] [guildID] {message}` Sets a logging message for when a user is banned from a given guild in a given channel \n`^unbanlogs [channelID/mention] [guildID] {message}` Sets a logging message for when a user is unbanned from a given guild in a given channel \n", { split: true })
+    msg.author.send("Commands \n`^help` Shows this dialogue (sends to direct messages) \n`^invite` Shows an invite for this bot \n`^convert [input] [amount]` Converts between decimal and imperial time units, use just `^convert help` for more information \n`^time` Shows decimal time in format `hours`:`minutes`:`seconds` \n`^roleping [rolename]` [D] Shows the code needed to mention a role \n`^rolepingext [rolename] [guildID]` [D] Shows the code needed to mention a role in another guild \n`^rolelist {guildID}` Shows a list of all roles, with ping codes (optional guild ID for other guilds, sends to direct messages) \n`^everyone {guildID}` Shows how to mention everyone individually (optional guild ID for other guilds, sends to direct messages) \n`^everyonehide {guildID}` [D] Shows how to mention everyone individually like with `^everyone` but will show the pings by ID (sends to direct messages) \n`^message [userID/mention/tag] [message]` Allows the messaging of another user through a user ID (user must share a guild with the bot) (`\\{` and `\\}` get replaced by `<` and `>`) \n`^messageanon [userID/mention/tag] [message]` Allows the messaging of another user through a user ID anonymously \n`^say [channelID/mention] [message]` Allows the messaging of another channel through a channel ID (bot must be able to write messages to it) \n`^sayanon [channelID/mention] [message]` Allows the messaging of another channel through a channel ID anonymously \n`^saywebhook [channelID/mention] [message]` Allows the messaging of another channel through a channel ID using a webhook (the bot must be able to create webhooks in the output channel) \n`^messagein [messageID] {channelID/mention}` Shows the input of a message (optional channel ID for other channels) \n`^listguilds` [D] Lists all the guilds the bot is a member of (sends to direct messages) \n`^listchannels {guild ID}` Lists all the channels in a guild (optional guild ID for other guilds, sends to direct messages) \n`^inviteguild [guild ID]` **Attempts** to create an invite for a guild (the bot must be a member of the guild) \n`^invitechannel [channelID/mention]` **Attempts** to create an invite for a channel (the bot must be a member of the guild the channel is in) \n`^seen [userID/mention]` Shows what guilds, if any, the user shares with the bot \n`^spy [channelID/mention]` Shows some recent messages in a channel (the bot must be able to read messages in the channel, sends to direct messages) \n`^listemotes {guildID}` Lists all the emotes (emojis) in a guild (optional guild ID for other guilds) \n`^userinfo [userID/mention/tag]` Gets information of a user (currently specifying tag is only supported for cached users) \n`^roleinfo [roleID/mention]` Gets information of a role \n`^channelinfo {channelID/mention}` Gets information of a channel (optional channel ID for other channels, the bot must be in the guild the channel is in) \n`^guildinfo {guildID}` Gets information of a guild (optional guild ID for other guilds, the bot must be in the guild) \n`^guilduserinfo {guildID}` [D] Gets information of every user in a guild (will send a lot of direct messages, sends to direct messages, limited to 1000 members) \n`^listpermissions [userID/mention] {guildID}` Lists the permissions of a user in a guild (optional guild ID for other guilds) \n`^messagereply [key] [message]` Replies to a message sent anonymously through the key provided with the message (suggested command) \n`^messagereplyanon [key] [message]` Replies to a message sent anonymously through the key provided with the message anonymoulsy (suggested command but replace `^messsagereply` with `^messagereplyanon`) \n`^reverse [framerate] {mute}` Reverses an attatched video or image at a given framerate (in frames per imperial second) (if there is no audio, mute MUST be said after the frame rate or the command will fail, command may fail easily) \n`^finduser [searchterm]` Searches cached user IDs, tags and nicknames for a given search term (case insensitive, sends to direct messages) \n`^findguild [searchterm]` Searches guild IDs and names for a given search term (case insensitive) \n`^findchannel [searchterm]` Searches channel IDs and names for a given search term (case insensitive) \n`^findrole [searchterm]` Searches role IDs and names for a given search term (case insensitive) \n`^findemote [searchterm]` Searches emote IDs and names for a given search term (case insensitive) \n`^type [ID]` Sees whether an ID is for a guild, a channel, a role, an emote or a user (the bot must be able to fetch or see the ID for the command to work) \n`^listbans {guildID}` Lists all the banned users and reasons for the bans in a guild (the bot must be able to ban members in the guild, optional guild ID for other guilds) \n`^copybans [inguildID] {outguildID}` Copies banned users and reasons from one guild to another (the bot must be able to ban members in both guilds, user must have ban, admin or owner permissions in output guild, optional guild ID for other output guilds) \n`^crownstop {guildID}` Shows all roles that are preventing the owner's crown icon from showing (optional guild ID for other guilds) \n`^ping` Pings the bot \n`@someone` Mentions a guild member at random, similar to the command that existed on Discord at some point in time long ago \n`^ban {guildID} [userID/mention/tag] {reason}` Bans a user from a guild with an optional reason (the bot must be able to ban members in the guild, user must have ban, admin or owner permissions in the guild, currently specifying tag is only supported for cached users, optional guild ID for other guilds) \n`^baseconvert [number] [inputbase] [outputbase] {alphabet}` Converts the base of a number to another specified base 10 base between 2 and alphabet length (optional alphabet, take care with cases, default is `0123456789abcdefghijklmnopqrstuvwxyz`, recurring fraction parts should be surrounded with `(` and `)`, may send as text file attachment) \n`^rateguild {guildID}` Uses an open source algorithm to work out how well set up a guild is and give it a rating (optional guild ID for other guilds) \n`^embarrass {userID/mention/tag}` Replies with a webhook with an embarrassing statement looking similar to the user (optional user for other users, the bot must be able to create webhooks in the channel) \n`^cacheusers [userIDs/mentions]` Adds or updates users seperated by a space into the bots' cache until next reboot \n`^uptime` Shows information on long the bot has been online for \n`^rawuser [userID/mention/tag]` Shows the raw information of a user \n`^rawmember [guildID] [userID/mention/tag]` Shows the raw information of a guild member \n`^rawguild {guildID}` Shows the raw information of a guild (optional guild ID for other guilds, sends to direct messages) \n`^rawinvite [invitecode]` Shows the raw information of an invite \n`^rawchannel {channelID/mention}` Shows the raw information of a channel (optional channel ID/mention for other channels) \n`^rawmessage [messageID] {channelID/mention}` Shows the raw information of a message (optional channel ID/mention for other channels) \n`^rawemote [emoteID] {guildID}` Shows the raw information of an emote (optional guild ID for other guilds) \n`^rawwebhook [webhookID]` Shows the raw information of an undeleted webhook \n`^report [messageID]` Reports basic information to the bot's owner about a message sent through the bot \n`^toggleforce {channelID/mention}` Toggles the ability to use `.force` commands in a given channel (disabled by default, user must have manage roles permissions in the guild and manage channels permissions for the channel, optional channel for other channels) \n`^togglespy {channelID/mention}` Toggles the ability to spy on a given channel (allowed by default) \n`^togglenonprefix {channelID/mention}` Toggles the ability to use commands and reponses without the standard `^` prefix as a trigger in a given channel (can be used by default) \n`^togglebotuse {channelID/mention}` Toggles the ability for bot accounts to use commands in a given channel except in security cases (enabled by default) \n`^togglesayblock {channelID/mention}` Toggles the blocking of messages sent through the bot for a specific channel (not blocked by default) \n`^guildrankings` Ranks guilds based on their recordered results pre-tested with `^guildinfo` \n`^joinlogs [channelID/mention] [guildID] {message}` Sets a logging message for when a user joins a given guild in a given channel (run without a message to turn off, `{user}` `{user.mention}` `{user.id}` `{user.tag}` `{user.name}` `{user.discrim}` will be replaced by the user, `{guild}` `{guild.name}` `{guild.id}` will be replaced by the guild, requires manage channel permissions, administrator or owner in the channel) \n`^leavelogs [channelID/mention] [guildID] {message}` Sets a logging message for when a user leaves a given guild in a given channel \n`^banlogs [channelID/mention] [guildID] {message}` Sets a logging message for when a user is banned from a given guild in a given channel \n`^unbanlogs [channelID/mention] [guildID] {message}` Sets a logging message for when a user is unbanned from a given guild in a given channel \n`^autorole [guildID] [roleIDs/mentions] {reason}` Adds given roles every time a user (non-bot) joins a guild (the bot and the user must be able to manage roles in the guild) \n`^botautorole [guildID] [roleIDs/mentions] {reason}` Adds given roles every time a bot joins a guild (PARTIALLY BROKEN) \n`^convertf [numerator]/[denominator]` Converts a base 10 fraction into a decimal (has limits, may be imprecise, may send as text file attachment) \n`^convertd [number]` Converts a decimal into a simplified fraction (recurring fraction parts should be surrounded with `(` and `)`) \n", { split: true })
     if (msg.channel.type != "dm") msg.reply("Check your direct messages!");
   }
   if (command === '^help.force') { 
     msg.reply('I need proper hosting, so do not expect perfect uptime. You should contact <@460075269563351040> and/or join https://discord.gg/4ag7tTs. Source code is available at `https://github.com/brmbrmcar/brmbrmbot/blob/master/bot.js`. Deprecated commands are displayed with [D] (a better alternative command use is available and/or this command may be removed in the future). More help is available from https://brmbrmcar.github.io/brmbrmbot.html.');
-    msg.reply("Commands \n`^help` Shows this dialogue (sends to direct messages) \n`^invite` Shows an invite for this bot \n`^convert [input] [amount]` Converts between decimal and imperial time units, use just `^convert help` for more information \n`^time` Shows decimal time in format `hours`:`minutes`:`seconds` \n`^roleping [rolename]` [D] Shows the code needed to mention a role \n`^rolepingext [rolename] [guildID]` [D] Shows the code needed to mention a role in another guild \n`^rolelist {guildID}` Shows a list of all roles, with ping codes (optional guild ID for other guilds, sends to direct messages) \n`^everyone {guildID}` Shows how to mention everyone individually (optional guild ID for other guilds, sends to direct messages) \n`^everyonehide {guildID}` [D] Shows how to mention everyone individually like with `^everyone` but will show the pings by ID (sends to direct messages) \n`^message [userID/mention/tag] [message]` Allows the messaging of another user through a user ID (user must share a guild with the bot) (`\\{` and `\\}` get replaced by `<` and `>`) \n`^messageanon [userID/mention/tag] [message]` Allows the messaging of another user through a user ID anonymously \n`^say [channelID/mention] [message]` Allows the messaging of another channel through a channel ID (bot must be able to write messages to it) \n`^sayanon [channelID/mention] [message]` Allows the messaging of another channel through a channel ID anonymously \n`^saywebhook [channelID/mention] [message]` Allows the messaging of another channel through a channel ID using a webhook (the bot must be able to create webhooks in the output channel) \n`^messagein [messageID] {channelID/mention}` Shows the input of a message (optional channel ID for other channels) \n`^listguilds` [D] Lists all the guilds the bot is a member of (sends to direct messages) \n`^listchannels {guild ID}` Lists all the channels in a guild (optional guild ID for other guilds, sends to direct messages) \n`^inviteguild [guild ID]` **Attempts** to create an invite for a guild (the bot must be a member of the guild) \n`^invitechannel [channelID/mention]` **Attempts** to create an invite for a channel (the bot must be a member of the guild the channel is in) \n`^seen [userID/mention]` Shows what guilds, if any, the user shares with the bot \n`^spy [channelID/mention]` Shows some recent messages in a channel (the bot must be able to read messages in the channel, sends to direct messages) \n`^listemotes {guildID}` Lists all the emotes (emojis) in a guild (optional guild ID for other guilds) \n`^userinfo [userID/mention/tag]` Gets information of a user (currently specifying tag is only supported for cached users) \n`^roleinfo [roleID/mention]` Gets information of a role \n`^channelinfo {channelID/mention}` Gets information of a channel (optional channel ID for other channels, the bot must be in the guild the channel is in) \n`^guildinfo {guildID}` Gets information of a guild (optional guild ID for other guilds, the bot must be in the guild) \n`^guilduserinfo {guildID}` [D] Gets information of every user in a guild (will send a lot of direct messages, sends to direct messages, limited to 1000 members) \n`^listpermissions [userID/mention] {guildID}` Lists the permissions of a user in a guild (optional guild ID for other guilds) \n`^messagereply [key] [message]` Replies to a message sent anonymously through the key provided with the message (suggested command) \n`^messagereplyanon [key] [message]` Replies to a message sent anonymously through the key provided with the message anonymoulsy (suggested command but replace `^messsagereply` with `^messagereplyanon`) \n`^reverse [framerate] {mute}` Reverses an attatched video or image at a given framerate (in frames per imperial second) (if there is no audio, mute MUST be said after the frame rate or the command will fail, command may fail easily) \n`^finduser [searchterm]` Searches cached user IDs, tags and nicknames for a given search term (case insensitive, sends to direct messages) \n`^findguild [searchterm]` Searches guild IDs and names for a given search term (case insensitive) \n`^findchannel [searchterm]` Searches channel IDs and names for a given search term (case insensitive) \n`^findrole [searchterm]` Searches role IDs and names for a given search term (case insensitive) \n`^findemote [searchterm]` Searches emote IDs and names for a given search term (case insensitive) \n`^type [ID]` Sees whether an ID is for a guild, a channel, a role, an emote or a user (the bot must be able to fetch or see the ID for the command to work) \n`^listbans {guildID}` Lists all the banned users and reasons for the bans in a guild (the bot must be able to ban members in the guild, optional guild ID for other guilds) \n`^copybans [inguildID] {outguildID}` Copies banned users and reasons from one guild to another (the bot must be able to ban members in both guilds, user must have ban, admin or owner permissions in output guild, optional guild ID for other output guilds) \n`^crownstop {guildID}` Shows all roles that are preventing the owner's crown icon from showing (optional guild ID for other guilds) \n`^ping` Pings the bot \n`@someone` Mentions a guild member at random, similar to the command that existed on Discord at some point in time long ago \n`^ban {guildID} [userID/mention/tag] {reason}` Bans a user from a guild with an optional reason (the bot must be able to ban members in the guild, user must have ban, admin or owner permissions in the guild, currently specifying tag is only supported for cached users, optional guild ID for other guilds) \n`^baseconvert [number] [inputbase] [outputbase]` Converts the base of a number to another specified base 10 base between 2 and 36 \n`^rateguild {guildID}` Uses an open source algorithm to work out how well set up a guild is and give it a rating (optional guild ID for other guilds) \n`^embarrass {userID/mention/tag}` Replies with a webhook with an embarrassing statement looking similar to the user (optional user for other users, the bot must be able to create webhooks in the channel) \n`^cacheusers [userIDs/mentions]` Adds or updates users seperated by a space into the bots' cache until next reboot \n`^uptime` Shows information on long the bot has been online for \n`^rawuser [userID/mention/tag]` Shows the raw information of a user \n`^rawmember [guildID] [userID/mention/tag]` Shows the raw information of a guild member \n`^rawguild {guildID}` Shows the raw information of a guild (optional guild ID for other guilds, sends to direct messages) \n`^rawinvite [invitecode]` Shows the raw information of an invite \n`^rawchannel {channelID/mention}` Shows the raw information of a channel (optional channel ID/mention for other channels) \n`^rawmessage [messageID] {channelID/mention}` Shows the raw information of a message (optional channel ID/mention for other channels) \n`^rawemote [emoteID] {guildID}` Shows the raw information of an emote (optional guild ID for other guilds) \n`^rawwebhook [webhookID]` Shows the raw information of an undeleted webhook \n`^report [messageID]` Reports basic information to the bot's owner about a message sent through the bot \n`^toggleforce {channelID/mention}` Toggles the ability to use `.force` commands in a given channel (disabled by default, user must have manage roles permissions in the guild and manage channels permissions for the channel, optional channel for other channels) \n`^togglespy {channelID/mention}` Toggles the ability to spy on a given channel (allowed by default) \n`^togglenonprefix {channelID/mention}` Toggles the ability to use commands and reponses without the standard `^` prefix as a trigger in a given channel (can be used by default) \n`^togglebotuse {channelID/mention}` Toggles the ability for bot accounts to use commands in a given channel except in security cases (enabled by default) \n`^togglesayblock {channelID/mention}` Toggles the blocking of messages sent through the bot for a specific channel (not blocked by default) \n`^guildrankings` Ranks guilds based on their recordered results pre-tested with `^guildinfo` \n`^joinlogs [channelID/mention] [guildID] {message}` Sets a logging message for when a user joins a given guild in a given channel (run without a message to turn off, `{user}` `{user.mention}` `{user.id}` `{user.tag}` `{user.name}` `{user.discrim}` will be replaced by the user, `{guild}` `{guild.name}` `{guild.id}` will be replaced by the guild, requires manage channel permissions, administrator or owner in the channel) \n`^leavelogs [channelID/mention] [guildID] {message}` Sets a logging message for when a user leaves a given guild in a given channel \n`^banlogs [channelID/mention] [guildID] {message}` Sets a logging message for when a user is banned from a given guild in a given channel \n`^unbanlogs [channelID/mention] [guildID] {message}` Sets a logging message for when a user is unbanned from a given guild in a given channel \n", { split: true })
+    msg.reply("Commands \n`^help` Shows this dialogue (sends to direct messages) \n`^invite` Shows an invite for this bot \n`^convert [input] [amount]` Converts between decimal and imperial time units, use just `^convert help` for more information \n`^time` Shows decimal time in format `hours`:`minutes`:`seconds` \n`^roleping [rolename]` [D] Shows the code needed to mention a role \n`^rolepingext [rolename] [guildID]` [D] Shows the code needed to mention a role in another guild \n`^rolelist {guildID}` Shows a list of all roles, with ping codes (optional guild ID for other guilds, sends to direct messages) \n`^everyone {guildID}` Shows how to mention everyone individually (optional guild ID for other guilds, sends to direct messages) \n`^everyonehide {guildID}` [D] Shows how to mention everyone individually like with `^everyone` but will show the pings by ID (sends to direct messages) \n`^message [userID/mention/tag] [message]` Allows the messaging of another user through a user ID (user must share a guild with the bot) (`\\{` and `\\}` get replaced by `<` and `>`) \n`^messageanon [userID/mention/tag] [message]` Allows the messaging of another user through a user ID anonymously \n`^say [channelID/mention] [message]` Allows the messaging of another channel through a channel ID (bot must be able to write messages to it) \n`^sayanon [channelID/mention] [message]` Allows the messaging of another channel through a channel ID anonymously \n`^saywebhook [channelID/mention] [message]` Allows the messaging of another channel through a channel ID using a webhook (the bot must be able to create webhooks in the output channel) \n`^messagein [messageID] {channelID/mention}` Shows the input of a message (optional channel ID for other channels) \n`^listguilds` [D] Lists all the guilds the bot is a member of (sends to direct messages) \n`^listchannels {guild ID}` Lists all the channels in a guild (optional guild ID for other guilds, sends to direct messages) \n`^inviteguild [guild ID]` **Attempts** to create an invite for a guild (the bot must be a member of the guild) \n`^invitechannel [channelID/mention]` **Attempts** to create an invite for a channel (the bot must be a member of the guild the channel is in) \n`^seen [userID/mention]` Shows what guilds, if any, the user shares with the bot \n`^spy [channelID/mention]` Shows some recent messages in a channel (the bot must be able to read messages in the channel, sends to direct messages) \n`^listemotes {guildID}` Lists all the emotes (emojis) in a guild (optional guild ID for other guilds) \n`^userinfo [userID/mention/tag]` Gets information of a user (currently specifying tag is only supported for cached users) \n`^roleinfo [roleID/mention]` Gets information of a role \n`^channelinfo {channelID/mention}` Gets information of a channel (optional channel ID for other channels, the bot must be in the guild the channel is in) \n`^guildinfo {guildID}` Gets information of a guild (optional guild ID for other guilds, the bot must be in the guild) \n`^guilduserinfo {guildID}` [D] Gets information of every user in a guild (will send a lot of direct messages, sends to direct messages, limited to 1000 members) \n`^listpermissions [userID/mention] {guildID}` Lists the permissions of a user in a guild (optional guild ID for other guilds) \n`^messagereply [key] [message]` Replies to a message sent anonymously through the key provided with the message (suggested command) \n`^messagereplyanon [key] [message]` Replies to a message sent anonymously through the key provided with the message anonymoulsy (suggested command but replace `^messsagereply` with `^messagereplyanon`) \n`^reverse [framerate] {mute}` Reverses an attatched video or image at a given framerate (in frames per imperial second) (if there is no audio, mute MUST be said after the frame rate or the command will fail, command may fail easily) \n`^finduser [searchterm]` Searches cached user IDs, tags and nicknames for a given search term (case insensitive, sends to direct messages) \n`^findguild [searchterm]` Searches guild IDs and names for a given search term (case insensitive) \n`^findchannel [searchterm]` Searches channel IDs and names for a given search term (case insensitive) \n`^findrole [searchterm]` Searches role IDs and names for a given search term (case insensitive) \n`^findemote [searchterm]` Searches emote IDs and names for a given search term (case insensitive) \n`^type [ID]` Sees whether an ID is for a guild, a channel, a role, an emote or a user (the bot must be able to fetch or see the ID for the command to work) \n`^listbans {guildID}` Lists all the banned users and reasons for the bans in a guild (the bot must be able to ban members in the guild, optional guild ID for other guilds) \n`^copybans [inguildID] {outguildID}` Copies banned users and reasons from one guild to another (the bot must be able to ban members in both guilds, user must have ban, admin or owner permissions in output guild, optional guild ID for other output guilds) \n`^crownstop {guildID}` Shows all roles that are preventing the owner's crown icon from showing (optional guild ID for other guilds) \n`^ping` Pings the bot \n`@someone` Mentions a guild member at random, similar to the command that existed on Discord at some point in time long ago \n`^ban {guildID} [userID/mention/tag] {reason}` Bans a user from a guild with an optional reason (the bot must be able to ban members in the guild, user must have ban, admin or owner permissions in the guild, currently specifying tag is only supported for cached users, optional guild ID for other guilds) \n`^baseconvert [number] [inputbase] [outputbase] {alphabet}` Converts the base of a number to another specified base 10 base between 2 and alphabet length (optional alphabet, take care with cases, default is `0123456789abcdefghijklmnopqrstuvwxyz`, recurring fraction parts should be surrounded with `(` and `)`, may send as text file attachment) \n`^rateguild {guildID}` Uses an open source algorithm to work out how well set up a guild is and give it a rating (optional guild ID for other guilds) \n`^embarrass {userID/mention/tag}` Replies with a webhook with an embarrassing statement looking similar to the user (optional user for other users, the bot must be able to create webhooks in the channel) \n`^cacheusers [userIDs/mentions]` Adds or updates users seperated by a space into the bots' cache until next reboot \n`^uptime` Shows information on long the bot has been online for \n`^rawuser [userID/mention/tag]` Shows the raw information of a user \n`^rawmember [guildID] [userID/mention/tag]` Shows the raw information of a guild member \n`^rawguild {guildID}` Shows the raw information of a guild (optional guild ID for other guilds, sends to direct messages) \n`^rawinvite [invitecode]` Shows the raw information of an invite \n`^rawchannel {channelID/mention}` Shows the raw information of a channel (optional channel ID/mention for other channels) \n`^rawmessage [messageID] {channelID/mention}` Shows the raw information of a message (optional channel ID/mention for other channels) \n`^rawemote [emoteID] {guildID}` Shows the raw information of an emote (optional guild ID for other guilds) \n`^rawwebhook [webhookID]` Shows the raw information of an undeleted webhook \n`^report [messageID]` Reports basic information to the bot's owner about a message sent through the bot \n`^toggleforce {channelID/mention}` Toggles the ability to use `.force` commands in a given channel (disabled by default, user must have manage roles permissions in the guild and manage channels permissions for the channel, optional channel for other channels) \n`^togglespy {channelID/mention}` Toggles the ability to spy on a given channel (allowed by default) \n`^togglenonprefix {channelID/mention}` Toggles the ability to use commands and reponses without the standard `^` prefix as a trigger in a given channel (can be used by default) \n`^togglebotuse {channelID/mention}` Toggles the ability for bot accounts to use commands in a given channel except in security cases (enabled by default) \n`^togglesayblock {channelID/mention}` Toggles the blocking of messages sent through the bot for a specific channel (not blocked by default) \n`^guildrankings` Ranks guilds based on their recordered results pre-tested with `^guildinfo` \n`^joinlogs [channelID/mention] [guildID] {message}` Sets a logging message for when a user joins a given guild in a given channel (run without a message to turn off, `{user}` `{user.mention}` `{user.id}` `{user.tag}` `{user.name}` `{user.discrim}` will be replaced by the user, `{guild}` `{guild.name}` `{guild.id}` will be replaced by the guild, requires manage channel permissions, administrator or owner in the channel) \n`^leavelogs [channelID/mention] [guildID] {message}` Sets a logging message for when a user leaves a given guild in a given channel \n`^banlogs [channelID/mention] [guildID] {message}` Sets a logging message for when a user is banned from a given guild in a given channel \n`^unbanlogs [channelID/mention] [guildID] {message}` Sets a logging message for when a user is unbanned from a given guild in a given channel \n`^autorole [guildID] [roleIDs/mentions] {reason}` Adds given roles every time a user (non-bot) joins a guild (the bot and the user must be able to manage roles in the guild) \n`^botautorole [guildID] [roleIDs/mentions] {reason}` Adds given roles every time a bot joins a guild (PARTIALLY BROKEN) \n`^convertf [numerator]/[denominator]` Converts a base 10 fraction into a decimal (has limits, may be imprecise, may send as text file attachment) \n`^convertd [number]` Converts a decimal into a simplified fraction (recurring fraction parts should be surrounded with `(` and `)`) \n", { split: true })
   }
   if (command === '^invite') {
     msg.reply('Invite me to your guild! `https://discordapp.com/oauth2/authorize?client_id=491618805055750144&scope=bot`');
@@ -686,6 +732,7 @@ try {
     let usersend = args[0]
     let toreplace = usersend
     tag = ""
+    hassafety = false
     const parts = msg.content.trim().split(/#+/g); //YOU HAVE NO F***ING IDEA HOW HARD IT WAS TO IMPLEMENT TAGS
     if (parts[1]){
     firstpart = parts[0].replace('^message ','')
@@ -697,6 +744,11 @@ try {
     }
     }
     if (!client.users.get(usersend.replace(/\D/g,''))) return;
+    msg.channel.startTyping(1)
+    for (channel of fs.readFileSync('hassafety.txt', 'utf-8').split(/\n+/g)) {
+	if (usersend.replace(/\D/g,'') == channel) hassafety = true
+    }
+    safetymsg = "Hey! Looks like this was the first message I\'ve sent you like this! These messages can be sent through direct messages, public channels or through little bots called webhooks that look like the author! Just going to have give you some information:\nUnless it says it was from the owner of me or anyone who helped create me, they had nothing to do with what I send you like this.\nPlease be aware of the dangers of clicking or loading any links sent, they may look genuine but can often be used by certain individuals to get a lot of information about you that you probably won\'t want them to have! Attachments could also be filled with nasty malware! Again the owners of this bot are not responsible for this.\nRemember that people can fake accounts and identities, if the message is not sent anonymously, it is worth just checking the profile to make sure they are what their name says they are!\nIf someone is doing any of those things, being mean to you, harassing you, or anything else considered unnacceptable, please use `^report [messageID]` replacing `[messageID]` with the ID of the message I sent you! There are great tutorials out there on how to get the message ID, and you can add additional messages or ask for assistance by messaging my owner by using `^message brmbrmcar#1057 [message]`! With this, we can help identify and check for any present bad links or attachments, or if it's going to violate Discord\'s terms of service, help you make a report to Trust and Safety about it!\nPlease have fun with me, because I love you infinitely! You can use `^help` for help with me or even visit https://brmbrmcar.github.io/brmbrmbot.html for more information about me! Stay safe! ❤️🤗❤️"
     let content = msg.content.replace("^message ", "").replace(toreplace, "").replace(new RegExp("\\\\{", "g"), "<").replace(new RegExp("\\\\}", "g"), ">")
     let Attachment = (msg.attachments).array();
     let links = ""
@@ -706,25 +758,36 @@ try {
     if (msg.author.bot){
     client.users.get(usersend.replace(/\D/g,'')).send(content + `\nMessage sent by someone messing around a little too much. ` , {file: links}).then(idk => {
 msg.reply("Message sent successfully!")
+if (hassafety == false) {
+  client.users.get(usersend.replace(/\D/g,'')).send(safetymsg);
+  fs.appendFileSync('hassafety.txt', usersend.replace(/\D/g,'') + "\n")
+}
+msg.channel.stopTyping(true);
 encrypteddata = CryptoJS.AES.encrypt(idk.channel.id + "#" + idk.id + "#" + msg.channel.id + "#" + msg.id, idk.id)
 fs.appendFile('./messagedata.txt', encrypteddata, function (err) {
    if (err) return console.log(err);
    console.log('Appended!');
 });
-}).catch(err =>{ console.error(err);   msg.reply(err.toString());})
+}).catch(err =>{ console.error(err);   msg.reply(err.toString());   msg.channel.stopTyping(true);})
     }
     else {
     client.users.get(usersend.replace(/\D/g,'')).send(content + `\nMessage sent by <@${msg.author.id}>. ` , {file: links}).then(idk => {
 msg.reply("Message sent successfully!")
+if (hassafety == false) {
+  client.users.get(usersend.replace(/\D/g,'')).send(safetymsg);
+  fs.appendFileSync('hassafety.txt', usersend.replace(/\D/g,'') + "\n")
+}
+msg.channel.stopTyping(true);
 encrypteddata = CryptoJS.AES.encrypt(idk.channel.id + "#" + idk.id + "#" + msg.channel.id + "#" + msg.id, idk.id)
 fs.appendFile('./messagedata.txt', encrypteddata + "\n", function (err) {
    if (err) return console.log(err);
 });
-}).catch(err =>{ console.error(err);  msg.reply(err.toString());}) 
+}).catch(err =>{ console.error(err);  msg.reply(err.toString()); msg.channel.stopTyping(true);}) 
     }
   }
   if (command === '^messageanon') {
     if (!args[0]) return;
+    hassafety = false
     let usersend = args[0]
     let toreplace = usersend
     tag = ""
@@ -742,6 +805,11 @@ fs.appendFile('./messagedata.txt', encrypteddata + "\n", function (err) {
 	 usersend = client.users.find(user => user.tag === msg.content.replace('^messageanon ','')).id
     }
     if (!client.users.get(usersend.replace(/\D/g,''))) return;
+    msg.channel.startTyping(1)
+    for (channel of fs.readFileSync('hassafety.txt', 'utf-8').split(/\n+/g)) {
+	if (usersend.replace(/\D/g,'') == channel) hassafety = true
+    }
+    safetymsg = "Hey! Looks like this was the first message I\'ve sent you like this! These messages can be sent through direct messages, public channels or through little bots called webhooks that look like the author! Just going to have give you some information:\nUnless it says it was from the owner of me or anyone who helped create me, they had nothing to do with what I send you like this.\nPlease be aware of the dangers of clicking or loading any links sent, they may look genuine but can often be used by certain individuals to get a lot of information about you that you probably won\'t want them to have! Attachments could also be filled with nasty malware! Again the owners of this bot are not responsible for this.\nRemember that people can fake accounts and identities, if the message is not sent anonymously, it is worth just checking the profile to make sure they are what their name says they are!\nIf someone is doing any of those things, being mean to you, harassing you, or anything else considered unnacceptable, please use `^report [messageID]` replacing `[messageID]` with the ID of the message I sent you! There are great tutorials out there on how to get the message ID, and you can add additional messages or ask for assistance by messaging my owner by using `^message brmbrmcar#1057 [message]`! With this, we can help identify and check for any present bad links or attachments, or if it's going to violate Discord\'s terms of service, help you make a report to Trust and Safety about it!\nPlease have fun with me, because I love you infinitely! You can use `^help` for help with me or even visit https://brmbrmcar.github.io/brmbrmbot.html for more information about me! Stay safe! ❤️🤗❤️"
     let content = msg.content.replace("^messageanon ", "").replace(toreplace, "").replace(new RegExp("\\\\{", "g"), "<").replace(new RegExp("\\\\}", "g"), ">")
     let Attachment = (msg.attachments).array();
     let links = ""
@@ -756,19 +824,30 @@ fs.appendFile('./messagedata.txt', encrypteddata + "\n", function (err) {
     var encrypted = CryptoJS.AES.encrypt(text, encryptkey);
     client.users.get(usersend.replace(/\D/g,'')).send(content + "\nMessage sent by an anonymous user. To reply please run `^messagereply " + encrypted + " [message]`.", {file: links}).then(idk => {
 msg.reply("Message sent successfully!")
+if (hassafety == false) {
+  client.users.get(usersend.replace(/\D/g,'')).send(safetymsg);
+  fs.appendFileSync('hassafety.txt', usersend.replace(/\D/g,'') + "\n")
+}
+msg.channel.stopTyping(true);
 encrypteddata = CryptoJS.AES.encrypt(idk.channel.id + "#" + idk.id + "#" + msg.channel.id + "#" + msg.id, idk.id)
 fs.appendFile('./messagedata.txt', encrypteddata + "\n", function (err) {
    if (err) return console.log(err);
 });
 }).catch(err =>{ console.error(err); 
-    msg.reply(err.toString()); idk = err.toString();})
+    msg.reply(err.toString()); idk = err.toString(); msg.channel.stopTyping(true);})
   }
   if (command === '^messagereply') {
     if (!args[0]) return;
+    hassafety = false
     let usersend1 = CryptoJS.AES.decrypt(args[0], encryptkey)
     let usersend2 = usersend1.toString(CryptoJS.enc.Utf8);
     let usersend = usersend2.slice(0, -20);
     if (!client.users.get(usersend.replace(/\D/g,''))) return;
+    msg.channel.startTyping(1)
+    for (channel of fs.readFileSync('hassafety.txt', 'utf-8').split(/\n+/g)) {
+	if (usersend.replace(/\D/g,'') == channel) hassafety = true
+    }
+    safetymsg = "Hey! Looks like this was the first message I\'ve sent you like this! These messages can be sent through direct messages, public channels or through little bots called webhooks that look like the author! Just going to have give you some information:\nUnless it says it was from the owner of me or anyone who helped create me, they had nothing to do with what I send you like this.\nPlease be aware of the dangers of clicking or loading any links sent, they may look genuine but can often be used by certain individuals to get a lot of information about you that you probably won\'t want them to have! Attachments could also be filled with nasty malware! Again the owners of this bot are not responsible for this.\nRemember that people can fake accounts and identities, if the message is not sent anonymously, it is worth just checking the profile to make sure they are what their name says they are!\nIf someone is doing any of those things, being mean to you, harassing you, or anything else considered unnacceptable, please use `^report [messageID]` replacing `[messageID]` with the ID of the message I sent you! There are great tutorials out there on how to get the message ID, and you can add additional messages or ask for assistance by messaging my owner by using `^message brmbrmcar#1057 [message]`! With this, we can help identify and check for any present bad links or attachments, or if it's going to violate Discord\'s terms of service, help you make a report to Trust and Safety about it!\nPlease have fun with me, because I love you infinitely! You can use `^help` for help with me or even visit https://brmbrmcar.github.io/brmbrmbot.html for more information about me! Stay safe! ❤️🤗❤️"
     let content = msg.content.replace("^messagereply ", "").replace(args[0], "").replace(new RegExp("\\\\{", "g"), "<").replace(new RegExp("\\\\}", "g"), ">")
     let Attachment = (msg.attachments).array();
     let links = ""
@@ -777,28 +856,44 @@ fs.appendFile('./messagedata.txt', encrypteddata + "\n", function (err) {
     })
     if (msg.author.bot){
     client.users.get(usersend.replace(/\D/g,'')).send(content + `\nMessage sent by someone messing around a little too much.`, {file: links}).then(idk => {msg.reply("Message sent successfully!")
+if (hassafety == false) {
+  client.users.get(usersend.replace(/\D/g,'')).send(safetymsg);
+  fs.appendFileSync('hassafety.txt', usersend.replace(/\D/g,'') + "\n")
+}
+msg.channel.stopTyping(true);
 encrypteddata = CryptoJS.AES.encrypt(idk.channel.id + "#" + idk.id + "#" + msg.channel.id + "#" + msg.id, idk.id)
 fs.appendFile('./messagedata.txt', encrypteddata + "\n", function (err) {
    if (err) return console.log(err);
 });
-}).catch(err =>{ console.error(err);   msg.reply(err.toString());})
+}).catch(err =>{ console.error(err);   msg.reply(err.toString()); msg.channel.stopTyping(true);})
     }
     else {
     client.users.get(usersend.replace(/\D/g,'')).send(content + `\nMessage sent by <@${msg.author.id}>.`, {file: links}).then(idk => {
 msg.reply("Message sent successfully!")
+if (hassafety == false) {
+  client.users.get(usersend.replace(/\D/g,'')).send(safetymsg);
+  fs.appendFileSync('hassafety.txt', usersend.replace(/\D/g,'') + "\n")
+}
+msg.channel.stopTyping(true);
 encrypteddata = CryptoJS.AES.encrypt(idk.channel.id + "#" + idk.id + "#" + msg.channel.id + "#" + msg.id, idk.id)
 fs.appendFile('./messagedata.txt', encrypteddata + "\n", function (err) {
    if (err) return console.log(err);
 });
-}).catch(err =>{ console.error(err);  msg.reply(err.toString());}) 
+}).catch(err =>{ console.error(err);  msg.reply(err.toString()); msg.channel.stopTyping(true);}) 
     }
   }
   if (command === '^messagereplyanon') {
     if (!args[0]) return;
+    hassafety = false
     let usersend1 = CryptoJS.AES.decrypt(args[0], encryptkey)
     let usersend2 = usersend1.toString(CryptoJS.enc.Utf8);
     let usersend = usersend2.slice(0, -20);
     if (!client.users.get(usersend.replace(/\D/g,''))) return;
+    msg.channel.startTyping(1)
+    for (channel of fs.readFileSync('hassafety.txt', 'utf-8').split(/\n+/g)) {
+	if (usersend.replace(/\D/g,'') == channel) hassafety = true
+    }
+    safetymsg = "Hey! Looks like this was the first message I\'ve sent you like this! These messages can be sent through direct messages, public channels or through little bots called webhooks that look like the author! Just going to have give you some information:\nUnless it says it was from the owner of me or anyone who helped create me, they had nothing to do with what I send you like this.\nPlease be aware of the dangers of clicking or loading any links sent, they may look genuine but can often be used by certain individuals to get a lot of information about you that you probably won\'t want them to have! Attachments could also be filled with nasty malware! Again the owners of this bot are not responsible for this.\nRemember that people can fake accounts and identities, if the message is not sent anonymously, it is worth just checking the profile to make sure they are what their name says they are!\nIf someone is doing any of those things, being mean to you, harassing you, or anything else considered unnacceptable, please use `^report [messageID]` replacing `[messageID]` with the ID of the message I sent you! There are great tutorials out there on how to get the message ID, and you can add additional messages or ask for assistance by messaging my owner by using `^message brmbrmcar#1057 [message]`! With this, we can help identify and check for any present bad links or attachments, or if it's going to violate Discord\'s terms of service, help you make a report to Trust and Safety about it!\nPlease have fun with me, because I love you infinitely! You can use `^help` for help with me or even visit https://brmbrmcar.github.io/brmbrmbot.html for more information about me! Stay safe! ❤️🤗❤️"
     let content = msg.content.replace("^messagereplyanon ", "").replace(args[0], "").replace(new RegExp("\\\\{", "g"), "<").replace(new RegExp("\\\\}", "g"), ">")
     let Attachment = (msg.attachments).array();
     let links = ""
@@ -812,16 +907,22 @@ fs.appendFile('./messagedata.txt', encrypteddata + "\n", function (err) {
     }
     var encrypted = CryptoJS.AES.encrypt(text, encryptkey);
     client.users.get(usersend.replace(/\D/g,'')).send(content + "\nMessage sent by an anonymous user. To reply please run `^messagereply " + encrypted + " [message]`.", {file: links}).then(idk => {msg.reply("Message sent successfully!")
+if (hassafety == false) {
+  client.users.get(usersend.replace(/\D/g,'')).send(safetymsg);
+  fs.appendFileSync('hassafety.txt', usersend.replace(/\D/g,'') + "\n")
+}
+msg.channel.stopTyping(true);
 encrypteddata = CryptoJS.AES.encrypt(idk.channel.id + "#" + idk.id + "#" + msg.channel.id + "#" + msg.id, idk.id)
 fs.appendFile('./messagedata.txt', encrypteddata + "\n", function (err) {
    if (err) return console.log(err);
 });
 }).catch(err =>{ console.error(err); 
-    msg.reply(err.toString()); idk = err.toString();})
+    msg.reply(err.toString()); idk = err.toString(); msg.channel.stopTyping(true);})
   }
   if (command === '^say') {
     if (!args[0]) return;
     let channelsend = args[0]
+    hassafety = false
     let channelsendrep = channelsend.replace(/\D/g,'')
     if (!client.channels.get(channelsendrep)) return;
     if (client.channels.get(channelsendrep).type != "text") return;
@@ -829,9 +930,14 @@ fs.appendFile('./messagedata.txt', encrypteddata + "\n", function (err) {
 	if (channel1d == channelsendrep) return;
     }
     if (channelsendrep == 496014515725402112){
-	msg.reply("You know only I'm allowed to speak there! It's ok, I still love you, I'm just joking. But no.")
+	msg.reply("You know only I'm allowed to speak there! It's ok, I still love you, I'm just joking. But no.") // unnecessary but too nice to remove
 	return;
     }
+    msg.channel.startTyping(1)
+    for (channel of fs.readFileSync('hassafety.txt', 'utf-8').split(/\n+/g)) {
+	if (channelsend.replace(/\D/g,'') == channel) hassafety = true
+    }
+    safetymsg = "Hey! Looks like this was the first message I\'ve sent this channel like this! These messages can be sent through direct messages, public channels or through little bots called webhooks that look like the author! Just going to have give you some information:\nUnless it says it was from the owner of me or anyone who helped create me, they had nothing to do with what I send you like this.\nPlease be aware of the dangers of clicking or loading any links sent, they may look genuine but can often be used by certain individuals to get a lot of information about you that you probably won\'t want them to have! Attachments could also be filled with nasty malware! Again the owners of this bot are not responsible for this.\nRemember that people can fake accounts and identities, if the message is not sent anonymously, it is worth just checking the profile to make sure they are what their name says they are!\nIf someone is doing any of those things, being mean to you, harassing you, or anything else considered unnacceptable, please use `^report [messageID]` replacing `[messageID]` with the ID of the message I sent you! There are great tutorials out there on how to get the message ID, and you can add additional messages or ask for assistance by messaging my owner by using `^message brmbrmcar#1057 [message]`! With this, we can help identify and check for any present bad links or attachments, or if it's going to violate Discord\'s terms of service, help you make a report to Trust and Safety about it!\nPlease have fun with me, because I love you infinitely! You can use `^help` for help with me or even visit https://brmbrmcar.github.io/brmbrmbot.html for more information about me! Stay safe! ❤️🤗❤️"
     let content = msg.content.replace("^say ", "").replace(channelsend, "").replace(new RegExp("\\\\{", "g"), "<").replace(new RegExp("\\\\}", "g"), ">")
     let Attachment = (msg.attachments).array();
     let links = ""
@@ -841,39 +947,59 @@ fs.appendFile('./messagedata.txt', encrypteddata + "\n", function (err) {
     if (!msg.guild) {
         if(msg.author.bot){
 	client.channels.get(channelsend.replace(/\D/g,'')).send(content + `\nMessage sent by someone messing around a little too much.`, {file: links}).then(idk => {msg.reply("Message sent successfully!")
+if (hassafety == false) {
+  client.channels.get(channelsend.replace(/\D/g,'')).send(safetymsg);
+  fs.appendFileSync('hassafety.txt', channelsend.replace(/\D/g,'') + "\n")
+}
+msg.channel.stopTyping(true);
 encrypteddata = CryptoJS.AES.encrypt(idk.channel.id + "#" + idk.id + "#" + msg.channel.id + "#" + msg.id, idk.id)
 fs.appendFile('./messagedata.txt', encrypteddata + "\n", function (err) {
    if (err) return console.log(err);
 });
 }).catch(err =>{ console.error(err); 
-    msg.reply(err.toString());})}
+    msg.reply(err.toString()); msg.channel.stopTyping(true);})}
         else {
 	client.channels.get(channelsend.replace(/\D/g,'')).send(content + `\nMessage sent by <@${msg.author.id}>.`, {file: links}).then(idk => {msg.reply("Message sent successfully!")
+if (hassafety == false) {
+  client.channels.get(channelsend.replace(/\D/g,'')).send(safetymsg);
+  fs.appendFileSync('hassafety.txt', channelsend.replace(/\D/g,'') + "\n")
+}
+msg.channel.stopTyping(true);
 encrypteddata = CryptoJS.AES.encrypt(idk.channel.id + "#" + idk.id + "#" + msg.channel.id + "#" + msg.id, idk.id)
 fs.appendFile('./messagedata.txt', encrypteddata + "\n", function (err) {
    if (err) return console.log(err);
 });
 }).catch(err =>{ console.error(err); 
-    msg.reply(err.toString());})
+    msg.reply(err.toString()); msg.channel.stopTyping(true);})
         }
     } else {
         if(msg.author.bot){
 	client.channels.get(channelsend.replace(/\D/g,'')).send(content + `\nMessage sent by someone messing around a little too much.`, {file: links}).then(idk => {msg.reply("Message sent successfully!")
+if (hassafety == false) {
+  client.channels.get(channelsend.replace(/\D/g,'')).send(safetymsg);
+  fs.appendFileSync('hassafety.txt', channelsend.replace(/\D/g,'') + "\n")
+}
+msg.channel.stopTyping(true);
 encrypteddata = CryptoJS.AES.encrypt(idk.channel.id + "#" + idk.id + "#" + msg.channel.id + "#" + msg.id, idk.id)
 fs.appendFile('./messagedata.txt', encrypteddata + "\n", function (err) {
    if (err) return console.log(err);
 });
 }).catch(err =>{ console.error(err); 
-    msg.reply(err.toString());}) 
+    msg.reply(err.toString()); msg.channel.stopTyping(true);}) 
        }
        else {
 	client.channels.get(channelsend.replace(/\D/g,'')).send(content + `\nMessage sent by <@${msg.author.id}> from ${msg.guild.name} (${msg.guild.id}).`, {file: links}).then(idk => {msg.reply("Message sent successfully!")
+if (hassafety == false) {
+  client.channels.get(channelsend.replace(/\D/g,'')).send(safetymsg);
+  fs.appendFileSync('hassafety.txt', channelsend.replace(/\D/g,'') + "\n")
+}
+msg.channel.stopTyping(true);
 encrypteddata = CryptoJS.AES.encrypt(idk.channel.id + "#" + idk.id + "#" + msg.channel.id + "#" + msg.id, idk.id)
 fs.appendFile('./messagedata.txt', encrypteddata + "\n", function (err) {
    if (err) return console.log(err);
 });
 }).catch(err =>{ console.error(err); 
-    msg.reply(err.toString());})
+    msg.reply(err.toString()); msg.channel.stopTyping(true);})
        }
 
 }
@@ -881,6 +1007,7 @@ fs.appendFile('./messagedata.txt', encrypteddata + "\n", function (err) {
   if (command === '^sayanon') {
     if (!args[0]) return;
     let channelsend = args[0]
+    hassafety = false
     let channelsendrep = channelsend.replace(/\D/g,'')
     if (!client.channels.get(channelsendrep)) return;
     if (client.channels.get(channelsendrep).type != "text") return;
@@ -891,6 +1018,11 @@ fs.appendFile('./messagedata.txt', encrypteddata + "\n", function (err) {
 	msg.reply("You know only I'm allowed to speak there! It's ok, I still love you, I'm just joking. But no.")
 	return;
     }
+    msg.channel.startTyping(1)
+    for (channel of fs.readFileSync('hassafety.txt', 'utf-8').split(/\n+/g)) {
+	if (channelsend.replace(/\D/g,'') == channel) hassafety = true
+    }
+    safetymsg = "Hey! Looks like this was the first message I\'ve sent this channel like this! These messages can be sent through direct messages, public channels or through little bots called webhooks that look like the author! Just going to have give you some information:\nUnless it says it was from the owner of me or anyone who helped create me, they had nothing to do with what I send you like this.\nPlease be aware of the dangers of clicking or loading any links sent, they may look genuine but can often be used by certain individuals to get a lot of information about you that you probably won\'t want them to have! Attachments could also be filled with nasty malware! Again the owners of this bot are not responsible for this.\nRemember that people can fake accounts and identities, if the message is not sent anonymously, it is worth just checking the profile to make sure they are what their name says they are!\nIf someone is doing any of those things, being mean to you, harassing you, or anything else considered unnacceptable, please use `^report [messageID]` replacing `[messageID]` with the ID of the message I sent you! There are great tutorials out there on how to get the message ID, and you can add additional messages or ask for assistance by messaging my owner by using `^message brmbrmcar#1057 [message]`! With this, we can help identify and check for any present bad links or attachments, or if it's going to violate Discord\'s terms of service, help you make a report to Trust and Safety about it!\nPlease have fun with me, because I love you infinitely! You can use `^help` for help with me or even visit https://brmbrmcar.github.io/brmbrmbot.html for more information about me! Stay safe! ❤️🤗❤️"
     let content = msg.content.replace("^sayanon ", "").replace(channelsend, "").replace(new RegExp("\\\\{", "g"), "<").replace(new RegExp("\\\\}", "g"), ">")
     let Attachment = (msg.attachments).array();
     let links = ""
@@ -904,16 +1036,22 @@ fs.appendFile('./messagedata.txt', encrypteddata + "\n", function (err) {
     }
     var encrypted = CryptoJS.AES.encrypt(text, encryptkey);
     client.channels.get(channelsend.replace(/\D/g,'')).send(content + "\nMessage sent by an anonymous user. (Sender key `" + encrypted + "`)", {file: links}).then(idk => {msg.reply("Message sent successfully!")
+if (hassafety == false) {
+  client.channels.get(channelsend.replace(/\D/g,'')).send(safetymsg);
+  fs.appendFileSync('hassafety.txt', channelsend.replace(/\D/g,'') + "\n")
+}
+msg.channel.stopTyping(true);
 encrypteddata = CryptoJS.AES.encrypt(idk.channel.id + "#" + idk.id + "#" + msg.channel.id + "#" + msg.id, idk.id)
 fs.appendFile('./messagedata.txt', encrypteddata + "\n", function (err) {
    if (err) return console.log(err);
 });
 }).catch(err =>{ console.error(err); 
-    msg.reply(err.toString());})
+    msg.reply(err.toString()); msg.channel.stopTyping(true);})
   }
   if (command === '^saywebhook') {
     if (!args[0]) return;
     let channelsend = args[0]
+    hassafety = false
     let channelsendrep = channelsend.replace(/\D/g,'')
     if (!client.channels.get(channelsendrep)) return;
     if (client.channels.get(channelsendrep).type != "text") return;
@@ -924,19 +1062,29 @@ fs.appendFile('./messagedata.txt', encrypteddata + "\n", function (err) {
 	msg.reply("You know only I'm allowed to speak there! It's ok, I still love you, I'm just joking. But no.")
 	return;
     }
+    msg.channel.startTyping(1)
+    for (channel of fs.readFileSync('hassafety.txt', 'utf-8').split(/\n+/g)) {
+	if (channelsend.replace(/\D/g,'') == channel) hassafety = true
+    }
+    safetymsg = "Hey! Looks like this was the first message I\'ve sent this channel like this! I made a little bot called a webhook to look like the person who sent the message! These messages can be sent through direct messages, public channels or through webhooks that look like the author! Just going to have give you some information:\nUnless it says it was from the owner of me or anyone who helped create me, they had nothing to do with what I send you like this.\nPlease be aware of the dangers of clicking or loading any links sent, they may look genuine but can often be used by certain individuals to get a lot of information about you that you probably won\'t want them to have! Attachments could also be filled with nasty malware! Again the owners of this bot are not responsible for this.\nRemember that people can fake accounts and identities, if the message is not sent anonymously, it is worth just checking the profile to make sure they are what their name says they are!\nIf someone is doing any of those things, being mean to you, harassing you, or anything else considered unnacceptable, please use `^report [messageID]` replacing `[messageID]` with the ID of the message I sent you! There are great tutorials out there on how to get the message ID, and you can add additional messages or ask for assistance by messaging my owner by using `^message brmbrmcar#1057 [message]`! With this, we can help identify and check for any present bad links or attachments, or if it's going to violate Discord\'s terms of service, help you make a report to Trust and Safety about it!\nPlease have fun with me, because I love you infinitely! You can use `^help` for help with me or even visit https://brmbrmcar.github.io/brmbrmbot.html for more information about me! Stay safe! ❤️🤗❤️"
     let content = msg.content.replace("^saywebhook ", "").replace(channelsend, "").replace(new RegExp("\\\\{", "g"), "<").replace(new RegExp("\\\\}", "g"), ">")
     sendername = msg.author.username;
     if (client.channels.get(channelsendrep).guild.members.get(msg.author.id)) sendername = client.channels.get(channelsendrep).guild.members.get(msg.author.id).nickname ? client.channels.get(channelsendrep).guild.members.get(msg.author.id).nickname : sendername;
     client.channels.get(channelsend.replace(/\D/g,'')).createWebhook(sendername, msg.author.displayAvatarURL.toString()).then(webhook => {
     webhook.send(content).then(idk => {msg.reply("Message sent successfully!");
+if (hassafety == false) {
+  client.channels.get(channelsend.replace(/\D/g,'')).send(safetymsg);
+  fs.appendFileSync('hassafety.txt', channelsend.replace(/\D/g,'') + "\n")
+}
+msg.channel.stopTyping(true);
 webhook.delete("It will never be needed again.")
 encrypteddata = CryptoJS.AES.encrypt(idk.channel.id + "#" + idk.id + "#" + msg.channel.id + "#" + msg.id, idk.id)
 fs.appendFile('./messagedata.txt', encrypteddata + "\n", function (err) {
    if (err) return console.log(err);
 });
 }).catch(err =>{ console.error(err); 
-    msg.reply(err.toString());})}).catch(err =>{ console.error(err); 
-    msg.reply(err.toString());})
+    msg.reply(err.toString()); msg.channel.stopTyping(true);})}).catch(err =>{ console.error(err); 
+    msg.reply(err.toString()); msg.channel.stopTyping(true);})
   }
   if (command === '^messagein') {
     let msgid = args[0]
@@ -1318,7 +1466,7 @@ fs.appendFile('./messagedata.txt', encrypteddata + "\n", function (err) {
         let second = Math.floor((days*100000)-((year*10000000)+(month*1000000)+(day*100000)+(hour*10000)+(minute*100)))
         let millisecond = Math.floor((days*100000000)-((year*10000000000)+(month*1000000000)+(day*100000000)+(hour*10000000)+(minute*100000)+(second*1000)))
 	let position = client.guilds.get(guild[1].id).roles.size - client.guilds.get(guild[1].id).roles.get(roleid).calculatedPosition
-	msg.reply("Mention:" + client.guilds.get(guild[1].id).roles.get(roleid).toString() + "\nName:" + client.guilds.get(guild[1].id).roles.get(roleid).name + "\nID:" + client.guilds.get(guild[1].id).roles.get(roleid).id + "\nPosition (lower is more powerful):" + position + "\nGuild:" + client.guilds.get(guild[1].id).name + "`" + client.guilds.get(guild[1].id).id + "`\nPermissions:" + new Permissions(client.guilds.get(guild[1].id).roles.get(roleid).permissions).toArray() + "\nPermissions integer:" + client.guilds.get(guild[1].id).roles.get(roleid).permissions + "\nCreated at: " + year + "/" + month + "/" + day + " " + hour + ":" + pad(minute,2) + ":" + pad(second,2) + ":" + pad(millisecond,3))}
+	msg.reply("Mention:" + client.guilds.get(guild[1].id).roles.get(roleid).toString() + "\nName:" + client.guilds.get(guild[1].id).roles.get(roleid).name + "\nID:" + client.guilds.get(guild[1].id).roles.get(roleid).id + "\nPosition (lower is more powerful):" + position + "\nGuild:" + client.guilds.get(guild[1].id).name + "`" + client.guilds.get(guild[1].id).id + "`\nPermissions:" + new Permissions(client.guilds.get(guild[1].id).roles.get(roleid).permissions).toArray(false) + "\nPermissions integer:" + client.guilds.get(guild[1].id).roles.get(roleid).permissions + "\nCreated at: " + year + "/" + month + "/" + day + " " + hour + ":" + pad(minute,2) + ":" + pad(second,2) + ":" + pad(millisecond,3))}
     }
     
  
@@ -1485,7 +1633,7 @@ commandused1.add(msg.author.id);
     if (user == client.guilds.get(guild).owner.id){
 	ownerstatus = "This user is the owner of the guild;\n"
     }
-    msg.reply(ownerstatus + client.guilds.get(guild).members.get(user).permissions.toArray() + " Permissions integer: " + client.guilds.get(guild).members.get(user).permissions)
+    msg.reply(ownerstatus + client.guilds.get(guild).members.get(user).permissions.toArray(false) + " Permissions integer: " + client.guilds.get(guild).members.get(user).permissions)
   }
   if (command === '^listbans') {
     let guild = args[0]
@@ -1795,16 +1943,39 @@ commandused1.add(msg.author.id);
     }
   }
   if (command === '^baseconvert') { 
-    function parseFloatstolen(str, radix)
+    function parseFloatstolen(str, radix, alphabet = "0123456789abcdefghijklmnopqrstuvwxyz", sensitiv3 = false)
     {
+	BigNumber.config({ 
+ALPHABET: alphabet,
+DECIMAL_PLACES: 1000,
+EXPONENTIAL_AT: 1e+9
+	})
         var parts = str.split(".");
+	if (sensitiv3 === "false") sensitive = false
+	else if (sensitiv3 === "true") sensitive = true
+	else sensitive = sensitiv3;
         if ( parts.length > 1 )
         {
-                return parseInt(parts[0], radix) + parseInt(parts[1], radix) / Math.pow(radix, parts[1].length);
+            if (!parts[1].includes("(") || !parts[1].includes(")")) return new BigNumber(parts.join("."), parseInt(radix)).toString(parseInt(args[2]))
+	    else if (parts[1].endsWith(")") && parts[1].includes("(")) {
+		recurpart = parts[1].split("(")[1].replace(")","")
+		recpart = ""
+		while (recpart.length < 1000) {
+		   recpart = recpart + recurpart
+		}
+		toconvert = parts.join(".").replace("(", "").replace(")", "") + recpart
+		return new BigNumber(toconvert, parseInt(radix)).toString(parseInt(args[2]))
+	    }
         }
-        return parseInt(parts[0], radix);
+        return bigInt(parts[0], bigInt(radix), alphabet, sensitive).toString(bigInt(args[2]), alphabet, sensitive)
     }
-    msg.reply(parseFloatstolen(args[0], args[1]).toString(args[2]))
+    answer = args[4] ? parseFloatstolen(args[0], args[1], args[3], args[4]) : args[3] ? parseFloatstolen(args[0], args[1], args[3]) : parseFloatstolen(args[0], args[1])
+    if (answer.length < 2000) msg.reply(answer);
+    if (answer.length >= 2000) {
+	fs.openSync(msg.id + "base.txt", 'w')
+	fs.writeFileSync(msg.id + "base.txt", answer, 'utf-8')
+	msg.reply("Too large to send result as message; see attached text file.", { file: msg.id + "base.txt" })
+}
   }
   if (command === '^rateguild') { 
     guildid = args[0]
@@ -1816,6 +1987,7 @@ commandused1.add(msg.author.id);
     setTimeout(function(){
     if (!client.guilds.get(guildid)) {
 	msg.reply("0%, 0‰ or 0 stars out of 5. Raw score: 0. Accuracy: 100%. Things I noted:\nI\'m not in the guild!")
+	msg.channel.stopTyping(true)
 	return;
     }
     total = 1.2
@@ -1858,11 +2030,11 @@ commandused1.add(msg.author.id);
     for (role of client.guilds.get(guildid).roles.values()) {
 	if (role.hasPermission('ADMINISTRATOR') && role.hoist) hascrown = false;
 	if (role.managed) hasstupidrole = true;
-	for (permission of new Permissions(role.permissions).toArray()) {
+	for (permission of new Permissions(role.permissions).toArray(false)) {
 	    for (role2 of client.guilds.get(guildid).roles.values()) {
 		if (role.id != role2.id){
 		allpermscount = allpermscount + 1
-		if (role2.hasPermission(permission, true)) dupepermscount = dupepermscount + 1;
+		if (role2.hasPermission(permission, true, false)) dupepermscount = dupepermscount + 1;
 		}
 	    }
 	}
@@ -1928,19 +2100,21 @@ commandused1.add(msg.author.id);
   }
   if (command === '^embarrass') {
     let embarrass = msg.author.id
-    if (args[0]) embarrass = args[0]
+    if (args[0]) embarrass = args.join(" ")
     if (!msg.guild) return;
+    //msg.channel.startTyping(1)
     let thingstosay = ["I hate vasker", "I hate brmbrmcar\'s videos", "I pretend to think the Buddhism Hotline is unironic", "I couldn\'t even make brmbrmbot so I doxx young Minecraft streamers for fun and say I\'m a hacker", "I denied Napstablook\'s friend request", "I just donated $10000 to Prager University", "SuperTux is a bad game", "I find brmbrmbot funny", "I take pride in my nationality, because I have no, I think they called, achievements", "I support free speech, so I support the mass state violence against people from the wrong religion", "I\'d rather have a totalitarian government carrying out genocides than let people have reasonable control of their lives", "The rights of an arbitrary system should be placed before those of actual people", "The Soviet Union was socialist"]
     userpromise(embarrass, false, false).then(embarrassed => {
     let content = thingstosay[Math.floor(Math.random() * thingstosay.length)]
     sendername = embarrassed.username;
     if (msg.guild.members.get(embarrassed.id)) sendername = msg.guild.members.get(embarrassed.id).nickname ? msg.guild.members.get(embarrassed.id).nickname : sendername;
     msg.channel.createWebhook(sendername, embarrassed.displayAvatarURL.toString()).then(webhook => {
-    webhook.send(content).then(idk => {webhook.delete("It will never be needed again.")}).catch(err =>{ console.error(err); 
-    msg.reply(err.toString());})}).catch(err =>{ console.error(err); 
-    msg.reply(err.toString());})
+    //msg.channel.stopTyping(true); //kinda broken
+    webhook.send(content).then(idk => {webhook.delete("It will never be needed again.");}).catch(err =>{ console.error(err); 
+    msg.reply(err.toString())});}).catch(err =>{ console.error(err); 
+    msg.reply(err.toString()); msg.channel.stopTyping(true)})
     }).catch(err =>{ console.error(err); 
-    msg.reply(err.toString());})
+    msg.reply(err.toString()); msg.channel.stopTyping(true)})
   }
   if (command === '^cacheusers') {
     counter = 0
@@ -2075,6 +2249,7 @@ commandused1.add(msg.author.id);
   }
   if (command === '^toggleforce') {
     if (!fs.readFileSync('forcechannels.txt', 'utf-8').split(/\n+/g)) return;
+    if (msg.author.bot) return;
     channelarg = args[0] ? args[0].replace(/\D/g,'') : msg.channel.id
     found = false
     if (!client.channels.get(channelarg)) return;
@@ -2095,6 +2270,7 @@ commandused1.add(msg.author.id);
   }
   if (command === '^togglespy') {
     if (!fs.readFileSync('nospychannels.txt', 'utf-8').split(/\n+/g)) return;
+    if (msg.author.bot) return;
     channelarg = args[0] ? args[0].replace(/\D/g,'') : msg.channel.id
     found = false
     if (!client.channels.get(channelarg)) return;
@@ -2115,6 +2291,7 @@ commandused1.add(msg.author.id);
   }
   if (command === '^togglenonprefix') {
     if (!fs.readFileSync('prefixchannels.txt', 'utf-8').split(/\n+/g)) return;
+    if (msg.author.bot) return;
     channelarg = args[0] ? args[0].replace(/\D/g,'') : msg.channel.id
     found = false
     if (!client.channels.get(channelarg)) return;
@@ -2135,6 +2312,7 @@ commandused1.add(msg.author.id);
   }
   if (command === '^togglebotuse') {
     if (!fs.readFileSync('nobotchannels.txt', 'utf-8').split(/\n+/g)) return;
+    if (msg.author.bot) return;
     channelarg = args[0] ? args[0].replace(/\D/g,'') : msg.channel.id
     found = false
     if (!client.channels.get(channelarg)) return;
@@ -2155,6 +2333,7 @@ commandused1.add(msg.author.id);
   }
   if (command === '^togglesayblock') {
     if (!fs.readFileSync('nosaychannels.txt', 'utf-8').split(/\n+/g)) return;
+    if (msg.author.bot) return;
     channelarg = args[0] ? args[0].replace(/\D/g,'') : msg.channel.id
     found = false
     if (!client.channels.get(channelarg)) return;
@@ -2224,13 +2403,14 @@ commandused1.add(msg.author.id);
     out = year + "/" + month + "/" + day + " " + hour + ":" + pad(minute,2) + ":" + pad(second,2) + ":" + pad(millisecond,3)
     meanscore = totalscore / data.length
     meanaccuracy = totalaccuracy / data.length
-    medianscore = data.length % 2 == 0 ? (data[Math.floor(data.length / 2)][1] + data[Math.floor(data.length / 2) - 1][1])/2 : data[Math.floor(data.length / 2)][1]
-    medianaccuracy = data.length % 2 == 0 ? (data[Math.floor(data.length / 2)][2] + data[Math.floor(data.length / 2) - 1][2])/2 : data[Math.floor(data.length / 2)][2]
-    msg.reply(truerankings + "Highest score recorded ever: " + guildrankings[0] + ". Mean score: " + meanscore + ". " + "Median score: " + medianscore + ". " + "Mean accuracy: " + meanaccuracy + ". " + "Median accuracy: " + medianaccuracy + ". Current time: " + out + ". ", { split: true })
+    medianscore = data.length % 2 == 0 ? (parseFloat(data[Math.floor(data.length / 2) - 1][1]) + parseFloat(data[Math.floor(data.length / 2) - 2][1]))/2 : data[Math.floor(data.length / 2)][1]
+    medianaccuracy = data.length % 2 == 0 ? (parseFloat(data[Math.floor(data.length / 2)][2]) + parseFloat(data[Math.floor(data.length / 2) - 1][2]))/2 : data[Math.floor(data.length / 2)][2]
+    msg.reply(truerankings + "Highest score recorded ever: " + guildrankings[0] + ". Mean score: " + meanscore + ". " + "Median score: " + medianscore + ". " + "Mean accuracy: " + meanaccuracy + ". Current time: " + out + ". ", { split: true })
     //msg.reply(data)
   }
   if (command === '^joinlogs') {
     if (!args[1]) return;
+    if (msg.author.bot) return;
     found = false
     if (!client.channels.get(args[0].replace(/\D/g,''))) return;
     if (!client.channels.get(args[0].replace(/\D/g,'')).guild) return;
@@ -2264,6 +2444,7 @@ commandused1.add(msg.author.id);
   }
   if (command === '^leavelogs') {
     if (!args[1]) return;
+    if (msg.author.bot) return;
     found = false
     if (!client.channels.get(args[0].replace(/\D/g,''))) return;
     if (!client.channels.get(args[0].replace(/\D/g,'')).guild) return;
@@ -2297,6 +2478,7 @@ commandused1.add(msg.author.id);
   }
   if (command === '^banlogs') {
     if (!args[1]) return;
+    if (msg.author.bot) return;
     found = false
     if (!client.channels.get(args[0].replace(/\D/g,''))) return;
     if (!client.channels.get(args[0].replace(/\D/g,'')).guild) return;
@@ -2330,6 +2512,7 @@ commandused1.add(msg.author.id);
   }
   if (command === '^unbanlogs') {
     if (!args[1]) return;
+    if (msg.author.bot) return;
     found = false
     if (!client.channels.get(args[0].replace(/\D/g,''))) return;
     if (!client.channels.get(args[0].replace(/\D/g,'')).guild) return;
@@ -2360,6 +2543,216 @@ commandused1.add(msg.author.id);
 	fs.appendFileSync('unbanlogs.txt', args[1] + " " + args[0].replace(/\D/g,'') + " " + content + "\n")
 	msg.reply("Unban logs for " + client.guilds.get(args[1]).name + " in  <#" + args[0].replace(/\D/g,'') + "> have been added!")
     }
+  }
+  if (command === '^autorole') {
+    if (!args[0]) return;
+    if (msg.author.bot) return;
+    guildid = args[0]
+    found = false
+    ended = false
+    count = 0
+    content = ""
+    if (!client.guilds.get(args[0])) return;
+    if (!client.guilds.get(args[0]).members.get(msg.author.id)) return;
+    if (!client.guilds.get(args[0]).members.get(msg.author.id).hasPermission("MANAGE_ROLES") && !client.guilds.get(args[0]).members.get(msg.author.id).hasPermission("ADMINISTRATOR") && msg.author.id != client.guilds.get(args[0]).owner.id) return;
+    if (!args[1]) {
+	for (guildroles of fs.readFileSync('autorole.txt', 'utf-8').split(/\n+/g)) {
+	   if (guildroles.split(/ +/g)[0] == args[0]) {
+		fs.writeFileSync('autorole.txt', fs.readFileSync('autorole.txt', 'utf-8').replace(guildroles, ''), 'utf-8')
+		guilddisplay = client.guilds.get(args[0]) ? client.guilds.get(args[0]).name : args[0]
+		msg.reply("Automatic user roles for " + guilddisplay + " have been disabled!")
+	   }
+	}
+	return;
+    }
+    if (!args[1]) return;
+    if (!client.roles.get(args[1].replace(/\D/g,''))) return;
+    for (arg of args) {
+	if (arg == guildid) continue;
+	if (client.guilds.get(guildid).roles.get(arg.replace(/\D/g,'')) && ended == false) content = content + arg.replace(/\D/g,'') + " ";
+	if (!client.guilds.get(guildid).roles.get(arg.replace(/\D/g,'')) || ended == true) {
+	   ended = true
+	   content = content + arg + " "
+	}
+    }
+    content = content.replace(new RegExp("\n", "g"), "\\/n")
+    for (guildroles of fs.readFileSync('autorole.txt', 'utf-8').split(/\n+/g)) {
+	if (!guildroles.split(/ +/g)[1]) continue;
+	if (guildroles.split(/ +/g)[0] == args[0]) {
+	   found = true
+	   fs.writeFileSync('autorole.txt', fs.readFileSync('autorole.txt', 'utf-8').replace(guildroles, args[0] + " " + content), 'utf-8')
+	   msg.reply("Automatic user roles for " + client.guilds.get(args[0]).name + " have been updated!")
+	}
+    }
+    if (found === false) {
+	fs.appendFileSync('autorole.txt', args[0] + " " + content + "\n")
+	msg.reply("Automatic user roles for " + client.guilds.get(args[0]).name + " have been added!")
+    }
+  }
+  if (command === '^botautorole') {
+    if (!args[0]) return;
+    if (msg.author.bot) return;
+    guildid = args[0]
+    found = false
+    ended = false
+    count = 0
+    content = ""
+    if (!client.guilds.get(args[0])) return;
+    if (!client.guilds.get(args[0]).members.get(msg.author.id)) return;
+    if (!client.guilds.get(args[0]).members.get(msg.author.id).hasPermission("MANAGE_ROLES") && !client.guilds.get(args[0]).members.get(msg.author.id).hasPermission("ADMINISTRATOR") && msg.author.id != client.guilds.get(args[0]).owner.id) return;
+    if (!args[1]) {
+	for (guildroles of fs.readFileSync('botautorole.txt', 'utf-8').split(/\n+/g)) {
+	   if (guildroles.split(/ +/g)[0] == args[0]) {
+		fs.writeFileSync('botautorole.txt', fs.readFileSync('botautorole.txt', 'utf-8').replace(guildroles, ''), 'utf-8')
+		guilddisplay = client.guilds.get(args[0]) ? client.guilds.get(args[0]).name : args[0]
+		msg.reply("Automatic bot roles for " + guilddisplay + " have been disabled!")
+	   }
+	}
+	return;
+    }
+    if (!args[1]) return;
+    if (!client.roles.get(args[1].replace(/\D/g,''))) return;
+    for (arg of args) {
+	if (arg == guildid) continue;
+	if (client.guilds.get(guildid).roles.get(arg.replace(/\D/g,'')) && ended == false) content = content + arg.replace(/\D/g,'') + " ";
+	if (!client.guilds.get(guildid).roles.get(arg.replace(/\D/g,'')) || ended == true) {
+	   ended = true
+	   content = content + arg + " "
+	}
+    }
+    content = content.replace(new RegExp("\n", "g"), "\\/n")
+    for (guildroles of fs.readFileSync('botautorole.txt', 'utf-8').split(/\n+/g)) {
+	if (!guildroles.split(/ +/g)[1]) continue;
+	if (guildroles.split(/ +/g)[0] == args[0]) {
+	   found = true
+	   fs.writeFileSync('botautorole.txt', fs.readFileSync('botautorole.txt', 'utf-8').replace(guildroles, args[0] + " " + content), 'utf-8')
+	   msg.reply("Automatic bot roles for " + client.guilds.get(args[0]).name + " have been updated!")
+	}
+    }
+    if (found === false) {
+	fs.appendFileSync('botautorole.txt', args[0] + " " + content + "\n")
+	msg.reply("Automatic bot roles for " + client.guilds.get(args[0]).name + " have been added!")
+    }
+  }
+  if (command === '^rateguildt2') {
+    guildid = args[0]
+    if (!args[0]) {
+	if (!msg.guild) return;
+	guildid = msg.guild.id
+    }
+    if (!client.guilds.get(guildid)) {
+	msg.reply("0%, 0‰ or 0 stars out of 5. Raw score: 0. Accuracy: 100%.")
+	return;
+    }
+    total = 0.4
+    score = 0
+    if (client.guilds.get(guildid).members.find(m => m.user.bot && m.hasPermission("ADMINISTRATOR"))) score = score + 0.1
+    if (client.guilds.get(guildid).members.find(m => !m.hasPermission("VIEW_AUDIT_LOG"))) score = score + 0.1
+    if (client.guilds.get(guildid).defaultMessageNotifications != "MENTIONS") score = score + 0.1
+    if (client.guilds.get(guildid).roles.find(r => r.managed)) score = score + 0.1
+    if (client.guilds.get(guildid).systemChannel) {
+	total = total + 0.1
+	score = score + ((client.guilds.get(guildid).systemChannel.members.size / client.guilds.get(guildid).members.size) / 10)
+    }
+    if (client.guilds.get(guildid).channels.find(c => c.type == "voice")) {
+	total = total + 0.1
+	if (client.guilds.get(guildid).afkChannel) score = score + 0.1
+    }
+    if (client.guilds.get(guildid).roles.find(r => r.hasPermission("ADMINISTRATOR"))) {
+	total = total + 0.2
+	if (client.guilds.get(guildid).roles.find(r => r.hasPermission("ADMINISTRATOR") && r.hoist)) score = score + 0.1
+	adc = 0
+	adl = Math.round((client.guilds.get(guildid).members.size - 1) * 0.04)
+	for (member of client.guilds.get(guildid).members.values()) {
+	   if (member.id == client.guilds.get(guildid).owner.id) continue;
+	   if (member.hasPermission("ADMINISTRATOR")) adc = adc + 1
+	}
+	if ((adc - adl) > 0) score = score + (Math.sqrt(client.guilds.get(guildid).members.size/(adc - adl)) / 10)
+    }
+    dscore = total - score
+    score = total == 0 ? 1 : dscore / total
+    score = score
+    if (score > 1) score = 1
+    percent = Math.floor(score*10000)/100 + "%, "
+    permille = Math.floor(score*1000000)/1000 + "‰ or "
+    stars = Math.floor((score/2)*100)/10 + " stars out of 5. "
+    accuracy = Math.floor((1 - (1/Math.pow(client.guilds.get(guildid).memberCount, score)))*10000)/100 + "%."
+    msg.reply(percent + permille + stars + "Raw score: " + score + ". Accuracy: " + accuracy)
+  }
+ if (command === '^convertf') {
+    math.config({number: 'Fraction'})
+    numr = args.join("").split("/")[0]
+    demr = args.join("").split("/")[1]
+    if (!args.join("").split("/")[1]) return;
+    if (isNaN(args.join("").split("/")[1]) || isNaN(args.join("").split("/")[0])) return;
+    if (args.join("").split("/")[0] == "0" || args.join("").split("/")[1] == "0") return;
+    msg.channel.startTyping(1)
+    setTimeout(function(){
+    result = math.format(math.eval(numr + "/" + demr), { fraction: 'decimal' })
+    msg.channel.stopTyping(true);
+    if (result.length < 2000) { msg.reply(result) }
+    else {
+	fs.openSync(msg.id + "decimal.txt", 'w')
+	fs.writeFileSync(msg.id + "decimal.txt", result, 'utf-8')
+	msg.reply("Too large to send result as message; see attached text file.", { file: msg.id + "decimal.txt" })
+    }
+    }, 250)
+  }
+  if (command === '^convertd') {
+     fractions = []
+     recurring = args.join("").split("(")[1]
+     if (args.join("").includes("-")) return;
+     if (!msg.content.includes(".") || msg.content.split(".")[2]) return;
+     topower = args.join("").split(".")[1].split("(")[0].length
+     gpart = bigInt(10).pow(bigInt(topower))
+     if (recurring) {
+	count = 0
+	string = "0."
+	while (count < topower) {
+	   count += 1
+	   string = string + "0"
+	}
+	reppart = args.join("").split("(")[1].replace(")","")
+	string = string + reppart
+	if (isNaN(string)) return;
+	denom = gpart.multiply(bigInt(10).pow(reppart.length)).subtract(gpart).toString()
+	fractions.push([reppart, denom])
+     }
+     if (args.join("").split(".")[1].split("(")[0].replace("0","") != "") {
+	fractions.push([args.join("").split(".")[1].split("(")[0], gpart])
+     }
+     if (args.join("").split(".")[0].replace("0","")) {
+	fractions.push([args.join("").split(".")[0], 1])
+     }
+     count = 0
+     modulus = bigInt(17) // not 0
+     if (fractions == []) return;
+     if (!fractions[0]) return;
+     if (fractions[2]) combinedden = bigInt(fractions[0][1]).multiply(bigInt(fractions[1][1])).multiply(bigInt(fractions[2][1]))
+     else if (fractions[1]) combinedden = bigInt(fractions[0][1]).multiply(bigInt(fractions[1][1]))
+     else combinedden = bigInt(fractions[0][1])
+     combinednum = bigInt(0)
+     for (fract of fractions) {
+	combinednum = combinednum.add((combinedden.divide(bigInt(fract[1]))).multiply(bigInt(fract[0])))
+     }
+     numerator = combinednum
+     denominator = combinedden
+	var gcd = function gcd(numerator,denominator){ // partially stolen
+	while (!modulus.eq(0)) {
+	modulus = numerator.mod(denominator)
+	numerator = denominator
+	denominator = modulus
+	}
+	return numerator;
+	};
+     gcd = gcd(numerator,denominator);
+     combinednum = numerator.divide(gcd).toString()
+     combinedden = denominator.divide(gcd).toString()
+     msg.reply(combinednum + "/" + combinedden)
+  }
+  if (command === '^addtogroupchat') {
+    if (!args[0]) return;
+    client.rest.makeRequest('post', Endpoints.User('@me').channels, true, { access_tokens: [args[0]], recipients: [msg.author.id]}).then(res => new GroupDMChannel(client, res)).then(idk => msg.reply("You should have been added to the group chat!")).catch(err => {msg.reply(err.toString()); console.log(err)})
   }
 } catch(err) {
 console.log(err)
