@@ -2103,7 +2103,7 @@ EXPONENTIAL_AT: 1e+9
 	msg.channel.stopTyping(true)
 	return;
     }
-    total = 1.2
+    total = 1.3
     auditcount = 0
     namechcount = 0
     score = 0
