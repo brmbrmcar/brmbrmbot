@@ -3178,7 +3178,7 @@ msg.channel.stopTyping(true);
     var pending = fs.readFileSync('pending.txt', 'utf-8').split(/\n+/g)
     var friends = fs.readFileSync('friends.txt', 'utf-8').split(/\n+/g)
     try {
-     var encrypteduser = CryptoJS.AES.decrypt(String(args[0]), encryptkey).toString(CryptoJS.enc.Utf8)
+     var encrypteduser = CryptoJS.AES.decrypt(String(args[0]), encryptkey + "a").toString(CryptoJS.enc.Utf8)
      if (encrypteduser != '') {
 	for (line of pending) {
 	  if (line.split(" ")[1] != encrypteduser || line.split(" ")[0] != msg.author.id) continue
@@ -3206,7 +3206,7 @@ msg.channel.stopTyping(true);
       }
       for (line of friends) {
 	if ((line.split(" ")[0] != user.id || line.split(" ")[1] != msg.author.id) && (line.split(" ")[1] != user.id || line.split(" ")[0] != msg.author.id)) continue
-	msg.reply("Are you sure you want to unfriend " + user.tag + "? Please confirm by using `^friend " + CryptoJS.AES.encrypt(user.id, encryptkey) + "`.")
+	msg.reply("Are you sure you want to unfriend " + user.tag + "? Please confirm by using `^friend " + CryptoJS.AES.encrypt(user.id, encryptkey + "a") + "`.")
 	return
       }
       if (user.id == client.user.id) {
