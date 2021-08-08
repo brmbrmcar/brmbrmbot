@@ -1975,7 +1975,7 @@ EXPONENTIAL_AT: 1e+9
     args.shift()
     if (!msg.guild) return;
     //msg.channel.startTyping(1)
-    userpromise(embarrass, false, false).then(embarrassed => {
+    userpromise(embarrass, false, true).then(embarrassed => {
     let content = args.join(" ")
     sendername = embarrassed.username;
     if (msg.guild.members.get(embarrassed.id)) sendername = msg.guild.members.get(embarrassed.id).nickname ? msg.guild.members.get(embarrassed.id).nickname : sendername;
